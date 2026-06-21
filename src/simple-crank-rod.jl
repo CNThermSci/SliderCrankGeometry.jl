@@ -25,8 +25,8 @@ import Base: convert
 
 function convert(
         ::𝕋ype{SimpleCrankRod{𝕋}},
-        x::SimpleCrankRod{S}
-    ) where {𝕋 <: Base.IEEEFloat, S <: Base.IEEEFloat}
+        x::SimpleCrankRod{𝕊}
+    ) where {𝕋 <: Base.IEEEFloat, 𝕊 <: Base.IEEEFloat}
     return SimpleCrankRod(
         𝕋(x.R), 𝕋(x.L), 𝕋(x.D), 𝕋(x.V)
     )

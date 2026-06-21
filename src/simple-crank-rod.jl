@@ -1,37 +1,49 @@
-struct SimpleCrankRod{𝕋 <: Base.IEEEFloat}
-    R::𝕋    # crank radius, m
-    L::𝕋    # rod length, m
-    D::𝕋    # piston diameter, m
-    V::𝕋    # minimum volume, m³
-    function SimpleCrankRod(r::𝕋, l::𝕋, d::𝕋, v::𝕋) where {𝕋 <: Base.IEEEFloat}
-        @assert(r > zero(𝕋), "Error: R <= 0")
+struct SimpleCrankRod{ℙ <: Base.IEEEFloat}
+    R::ℙ    # crank radius, m
+    L::ℙ    # rod length, m
+    D::ℙ    # piston diameter, m
+    V::ℙ    # minimum volume, m³
+    function SimpleCrankRod(r::ℙ, l::ℙ, d::ℙ, v::ℙ) where {ℙ <: Base.IEEEFloat}
+        @assert(r > zero(ℙ), "Error: R <= 0")
         @assert(l > r, "Error: L <= R")
-        @assert(d > zero(𝕋), "Error: D <= 0")
-        @assert(v > zero(𝕋), "Error: V <= 0")
-        return new{𝕋}(r, l, d, v)
+        @assert(d > zero(ℙ), "Error: D <= 0")
+        @assert(v > zero(ℙ), "Error: V <= 0")
+        return new{ℙ}(r, l, d, v)
     end
 end
 
 # External constructors
+
+
 function SimpleCrankRod(r::Real, l::Real, d::Real, v::Real)
-    𝕋 = promote_type(typeof.((r, l, d, v))...)
-    𝕋 = 𝕋 <: Base.IEEEFloat ? 𝕋 : Float64
-    return SimpleCrankRod(𝕋.((r, l, d, v))...)
+    ℙ = promote_type(typeof.((r, l, d, v))...)
+    ℙ = ℙ <: Base.IEEEFloat ? ℙ : Float64
+    return SimpleCrankRod(ℙ.((r, l, d, v))...)
 end
 
-#function SimpleCrankRod(
-#                        r::
-#                       )
+function SimpleCrankRod(
+        r::Quantity{T, Unitful.𝐋} where {T <: Real},
+        l::Quantity{T, Unitful.𝐋} where {T <: Real},
+        d::Quantity{T, Unitful.𝐋} where {T <: Real},
+        v::Quantity{T, Unitful.𝐋^3} where {T <: Real},
+    )
+    return SimpleCrankRod(
+        uconvert(u"m", r).val,
+        uconvert(u"m", l).val,
+        uconvert(u"m", d).val,
+        uconvert(u"m^3", v).val,
+    )
+end
 
 # Conversions
 import Base: convert
 
 function convert(
-        ::Type{SimpleCrankRod{𝕋}},
-        x::SimpleCrankRod{𝕊}
-    ) where {𝕋 <: Base.IEEEFloat, 𝕊 <: Base.IEEEFloat}
+        ::Type{SimpleCrankRod{ℙ}},
+        x::SimpleCrankRod{ℚ}
+    ) where {ℙ <: Base.IEEEFloat, ℚ <: Base.IEEEFloat}
     return SimpleCrankRod(
-        𝕋(x.R), 𝕋(x.L), 𝕋(x.D), 𝕋(x.V)
+        ℙ(x.R), ℙ(x.L), ℙ(x.D), ℙ(x.V)
     )
 end
 
@@ -39,10 +51,10 @@ end
 import Base: promote_rule
 
 function promote_rule(
-        ::Type{SimpleCrankRod{𝕋}},
-        ::Type{SimpleCrankRod{𝕊}}
-    ) where {𝕋 <: Base.IEEEFloat, 𝕊 <: Base.IEEEFloat}
-    return SimpleCrankRod{promote_type(𝕋, 𝕊)}
+        ::Type{SimpleCrankRod{ℙ}},
+        ::Type{SimpleCrankRod{ℚ}}
+    ) where {ℙ <: Base.IEEEFloat, ℚ <: Base.IEEEFloat}
+    return SimpleCrankRod{promote_type(ℙ, ℚ)}
 end
 
 # Export

@@ -19,12 +19,15 @@ function SimpleCrankRod(r::Real, l::Real, d::Real, v::Real)
     return SimpleCrankRod(𝕋.((r, l, d, v))...)
 end
 
+#function SimpleCrankRod(
+#                        r::
+#                       )
 
 # Conversions
 import Base: convert
 
 function convert(
-        ::𝕋ype{SimpleCrankRod{𝕋}},
+        ::Type{SimpleCrankRod{𝕋}},
         x::SimpleCrankRod{𝕊}
     ) where {𝕋 <: Base.IEEEFloat, 𝕊 <: Base.IEEEFloat}
     return SimpleCrankRod(
@@ -36,8 +39,8 @@ end
 import Base: promote_rule
 
 function promote_rule(
-        ::𝕋ype{SimpleCrankRod{𝕋}},
-        ::𝕋ype{SimpleCrankRod{𝕊}}
+        ::Type{SimpleCrankRod{𝕋}},
+        ::Type{SimpleCrankRod{𝕊}}
     ) where {𝕋 <: Base.IEEEFloat, 𝕊 <: Base.IEEEFloat}
     return SimpleCrankRod{promote_type(𝕋, 𝕊)}
 end

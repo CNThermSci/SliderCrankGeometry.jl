@@ -13,7 +13,9 @@ struct SimpleCrankRod{ℙ <: Base.IEEEFloat}
 end
 
 # External constructors
-
+function SimpleCrankRod{ℙ}(r::Real, l::Real, d::Real, v::Real) where {ℙ <: Base.IEEEFloat}
+    return SimpleCrankRod(ℙ.((r, l, d, v))...)
+end
 
 function SimpleCrankRod(r::Real, l::Real, d::Real, v::Real)
     ℙ = promote_type(typeof.((r, l, d, v))...)

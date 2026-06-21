@@ -1,5 +1,5 @@
 module EngineKinematics
 
-include("simple-reciprocating.jl")
+include("simple-crank-rod.jl")
 
 end

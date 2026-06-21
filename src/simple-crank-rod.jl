@@ -1,14 +1,19 @@
+# Type aliasing
+# -------------
+
+FLOAT = Base.IEEEFloat
+
 # Structure (type) definition
 # ---------------------------
 
-struct SimpleCR{ℙ <: Base.IEEEFloat}
+struct SimpleCR{ℙ <: FLOAT}
     R::ℙ    # crank radius, m
     L::ℙ    # rod length, m
     D::ℙ    # piston diameter, m
     V::ℙ    # minimum volume, m³
     # Internal constructors
     # Validating
-    function SimpleCR(r::ℙ, l::ℙ, d::ℙ, v::ℙ) where {ℙ <: Base.IEEEFloat}
+    function SimpleCR(r::ℙ, l::ℙ, d::ℙ, v::ℙ) where {ℙ <: FLOAT}
         @assert(r > zero(ℙ), "Error: R <= 0")
         @assert(l > r, "Error: L <= R")
         @assert(d > zero(ℙ), "Error: D <= 0")
@@ -21,14 +26,14 @@ end
 # ---------------------
 
 # Set type conversion / 1 indirection
-function SimpleCR{ℙ}(r::Real, l::Real, d::Real, v::Real) where {ℙ <: Base.IEEEFloat}
+function SimpleCR{ℙ}(r::Real, l::Real, d::Real, v::Real) where {ℙ <: FLOAT}
     return SimpleCR(ℙ.((r, l, d, v))...)
 end
 
 # Promotion type conversion / 2 indirections
 function SimpleCR(r::Real, l::Real, d::Real, v::Real)
     ℙ = promote_type(typeof.((r, l, d, v))...)
-    ℙ = ℙ <: Base.IEEEFloat ? ℙ : Float64
+    ℙ = ℙ <: FLOAT ? ℙ : Float64
     return SimpleCR{ℙ}(r, l, d, v)
 end
 
@@ -38,7 +43,7 @@ function SimpleCR{ℙ}(
         l::Unitful.Length{Real},
         d::Unitful.Length{Real},
         v::Unitful.Volume{Real}
-    ) where {ℙ <: Base.IEEEFloat}
+    ) where {ℙ <: FLOAT}
     return SimpleCR{ℙ}(
         uconvert(u"m", r).val,
         uconvert(u"m", l).val,
@@ -67,21 +72,20 @@ end
 
 import Base: convert
 
-function convert(::Type{SimpleCR{ℙ}}, x::SimpleCR{ℚ}) where {ℙ <: Base.IEEEFloat, ℚ <: Base.IEEEFloat}
-    return SimpleCR(
-        ℙ(x.R), ℙ(x.L), ℙ(x.D), ℙ(x.V)
-    )
+function convert(::Type{SimpleCR{ℙ}}, x::SimpleCR{ℚ}) where {ℙ <: FLOAT, ℚ <: FLOAT}
+    return SimpleCR{ℙ}(x.R, x.L, x.D, x.V)
 end
 
 # Promotions
+# ----------
+
 import Base: promote_rule
 
-function promote_rule(
-        ::Type{SimpleCR{ℙ}},
-        ::Type{SimpleCR{ℚ}}
-    ) where {ℙ <: Base.IEEEFloat, ℚ <: Base.IEEEFloat}
+function promote_rule(::Type{SimpleCR{ℙ}}, ::Type{SimpleCR{ℚ}}) where {ℙ <: FLOAT, ℚ <: FLOAT}
     return SimpleCR{promote_type(ℙ, ℚ)}
 end
 
 # Export
+# ------
+
 export SimpleCR

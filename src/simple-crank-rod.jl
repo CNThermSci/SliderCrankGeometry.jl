@@ -1,12 +1,13 @@
 # Type aliasing
 # -------------
 
+# IEEE-754 normalized floating point types of half, single, and double precision
 FLOAT = Base.IEEEFloat
 
 # Structure (type) definition
 # ---------------------------
 
-struct SimpleCR{ℙ <: FLOAT}
+struct SimpleCR{ℙ <: FLOAT} # Type parameter ℙ indicates the FLOAT Precision
     R::ℙ    # crank radius, m
     L::ℙ    # rod length, m
     D::ℙ    # piston diameter, m
@@ -93,7 +94,7 @@ export SimpleCR
 # User-facing functions
 # ---------------------
 
-# Functor
+# Type Functor
 (x::SimpleCR)(units = false) =
     Bool(units) ? (
         R = x.R * u"m",

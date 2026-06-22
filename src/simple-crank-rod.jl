@@ -107,11 +107,11 @@ Stroke(𝑥::SimpleCR) = 2 * 𝑥.R
 Area(𝑥::SimpleCR) = π * 𝑥.D^2 / 4
 
 # Volume relations
-Vdu(𝑥::SimpleCR) = Stroke(x) * Area(x)
-Vmax(𝑥::SimpleCR) = Vmin(x) + Vdu(x)
+Vdu(𝑥::SimpleCR) = Stroke(𝑥) * Area(𝑥)
+Vmax(𝑥::SimpleCR) = Vmin(𝑥) + Vdu(𝑥)
 
 # Ratio relations
-rv(𝑥::SimpleCR) = Vmax(x) / Vmin(x)
+rv(𝑥::SimpleCR) = Vmax(𝑥) / Vmin(𝑥)
 rLR(𝑥::SimpleCR) = 𝑥.L / 𝑥.R
 rRL(𝑥::SimpleCR) = 𝑥.R / 𝑥.L
 rSD(𝑥::SimpleCR) = 𝑥.S / 𝑥.D
@@ -136,12 +136,13 @@ end
 # ---------------------
 
 # Position from TDC; 𝛼 in rad
-x(𝑥::SimpleCR{ℙ}, 𝛼::ℙ) where {ℙ} = begin
+x(𝑥::SimpleCR{ℙ}, 𝛼::Real) where {ℙ} = begin
     𝟙 = one(ℙ)
     LR = [𝑥.L 𝑥.R]
-    sc = [𝟙 - √(𝟙 - (rLR(𝑥) * sin(𝛼))^2), 𝟙 - cos(𝛼)]
+    sc = [𝟙 - √(𝟙 - (rRL(𝑥) * sin(ℙ(𝛼)))^2), 𝟙 - cos(ℙ(𝛼))]
     return (LR * sc)[1]
 end
 
 # Instantaneous volume; 𝛼 in rad
-V(𝑥::SimpleCR{ℙ}, 𝛼::ℙ) where {ℙ} = Vmin(𝑥) + Area(𝑥) * x(𝑥, 𝛼)
+V(𝑥::SimpleCR, 𝛼::Real) = Vmin(𝑥) + Area(𝑥) * x(𝑥, 𝛼)
+

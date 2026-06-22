@@ -95,33 +95,20 @@ export SimpleCR
 # ---------------------
 
 # Stored data
-Radius(x::SimpleCR, units = false) = Bool(units) ? x.R * u"m" : x.R
-Length(x::SimpleCR, units = false) = Bool(units) ? x.L * u"m" : x.L
-Diameter(x::SimpleCR, units = false) = Bool(units) ? x.D * u"m" : x.D
-Vmin(x::SimpleRC, units = false) = Bool(units) ? x.V * u"m^3" : x.V
+Radius(x::SimpleCR) = x.R
+Length(x::SimpleCR) = x.L
+Diameter(x::SimpleCR) = x.D
+Vmin(x::SimpleRC) = x.V
 
 # Length relations
-Stroke(x::SimpleRC, units = false) = begin
-    S = 2 * x.R
-    return Bool(unit) ? S * u"m" : S
-end
+Stroke(x::SimpleRC) = 2 * x.R
 
 # Area relations
-Area(x::SimpleRC, units = false) = begin
-    A = π * x.D ^ 2 / 4
-    return Bool(unit) ? A * u"m^2" : A
-end
+Area(x::SimpleRC) = π * x.D ^ 2 / 4
 
 # Volume relations
-Vdu(x::SimpleRC, units = false) = begin
-    Vdu = Stroke(x) * Area(x)
-    return Bool(unit) ? Vdu * u"m^3" : Vdu
-end
-
-Vmax(x::SimpleRC, units = false) = begin
-    Vmax = Vmin(x) + Vdu(x)
-    return Bool(unit) ? Vmax * u"m^3" : Vmax
-end
+Vdu(x::SimpleRC) = Stroke(x) * Area(x)
+Vmax(x::SimpleRC) = Vmin(x) + Vdu(x)
 
 # Ratio relations
 rv(x::SimpleRC) = Vmax(x) / Vmin(x)
@@ -129,7 +116,6 @@ rLR(x::SimpleRC) = x.L / x.R
 rRL(x::SimpleRC) = x.R / x.L
 rSD(x::SimpleRC) = x.S / x.D
 rDS(x::SimpleRC) = x.D / x.S
-
 
 # Type Functor
 (x::SimpleCR)(units = false) =

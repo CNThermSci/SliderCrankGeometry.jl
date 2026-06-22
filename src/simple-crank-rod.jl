@@ -98,24 +98,24 @@ export SimpleCR
 Radius(𝑥::SimpleCR) = 𝑥.R
 Length(𝑥::SimpleCR) = 𝑥.L
 Diameter(𝑥::SimpleCR) = 𝑥.D
-Vmin(𝑥::SimpleRC) = 𝑥.V
+Vmin(𝑥::SimpleCR) = 𝑥.V
 
 # Length relations
-Stroke(𝑥::SimpleRC) = 2 * 𝑥.R
+Stroke(𝑥::SimpleCR) = 2 * 𝑥.R
 
 # Area relations
-Area(𝑥::SimpleRC) = π * 𝑥.D^2 / 4
+Area(𝑥::SimpleCR) = π * 𝑥.D^2 / 4
 
 # Volume relations
-Vdu(𝑥::SimpleRC) = Stroke(x) * Area(x)
-Vmax(𝑥::SimpleRC) = Vmin(x) + Vdu(x)
+Vdu(𝑥::SimpleCR) = Stroke(x) * Area(x)
+Vmax(𝑥::SimpleCR) = Vmin(x) + Vdu(x)
 
 # Ratio relations
-rv(𝑥::SimpleRC) = Vmax(x) / Vmin(x)
-rLR(𝑥::SimpleRC) = 𝑥.L / 𝑥.R
-rRL(𝑥::SimpleRC) = 𝑥.R / 𝑥.L
-rSD(𝑥::SimpleRC) = 𝑥.S / 𝑥.D
-rDS(𝑥::SimpleRC) = 𝑥.D / 𝑥.S
+rv(𝑥::SimpleCR) = Vmax(x) / Vmin(x)
+rLR(𝑥::SimpleCR) = 𝑥.L / 𝑥.R
+rRL(𝑥::SimpleCR) = 𝑥.R / 𝑥.L
+rSD(𝑥::SimpleCR) = 𝑥.S / 𝑥.D
+rDS(𝑥::SimpleCR) = 𝑥.D / 𝑥.S
 
 # Type Functor
 (𝑥::SimpleCR)(units = false) = begin
@@ -136,7 +136,7 @@ end
 # ---------------------
 
 # Position from TDC; 𝛼 in rad
-x(𝑥::SimpleRC{ℙ}, 𝛼::ℙ) where {ℙ} = begin
+x(𝑥::SimpleCR{ℙ}, 𝛼::ℙ) where {ℙ} = begin
     𝟙 = one(ℙ)
     LR = [𝑥.L 𝑥.R]
     sc = [𝟙 - √(𝟙 - (rLR(𝑥) * sin(𝛼))^2), 𝟙 - cos(𝛼)]
@@ -144,4 +144,4 @@ x(𝑥::SimpleRC{ℙ}, 𝛼::ℙ) where {ℙ} = begin
 end
 
 # Instantaneous volume; 𝛼 in rad
-V(𝑥::SimpleRC{ℙ}, 𝛼::ℙ) where {ℙ} = Vmin(𝑥) + Area(𝑥) * x(𝑥, 𝛼)
+V(𝑥::SimpleCR{ℙ}, 𝛼::ℙ) where {ℙ} = Vmin(𝑥) + Area(𝑥) * x(𝑥, 𝛼)

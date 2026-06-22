@@ -11,15 +11,15 @@ struct SimpleCR{ℙ <: FLOAT} # Type parameter ℙ indicates the FLOAT Precision
     R::ℙ    # crank radius, m
     L::ℙ    # rod length, m
     D::ℙ    # piston diameter, m
-    V::ℙ    # minimum volume, m³
+    r::ℙ    # volume ratio, –
     # Internal constructors
     # Validating
-    function SimpleCR(r::ℙ, l::ℙ, d::ℙ, v::ℙ) where {ℙ <: FLOAT}
-        @assert(r > zero(ℙ), "Error: R <= 0")
-        @assert(l > r, "Error: L <= R")
-        @assert(d > zero(ℙ), "Error: D <= 0")
-        @assert(v > zero(ℙ), "Error: V <= 0")
-        return new{ℙ}(r, l, d, v)
+    function SimpleCR(R::ℙ, L::ℙ, D::ℙ, r::ℙ) where {ℙ <: FLOAT}
+        @assert(R > zero(ℙ), "Error: R <= 0")
+        @assert(L > R, "Error: L <= R")
+        @assert(D > zero(ℙ), "Error: D <= 0")
+        @assert(r > one(ℙ), "Error: r <= 1")
+        return new{ℙ}(R, L, D, r)
     end
 end
 
@@ -27,44 +27,44 @@ end
 # ---------------------
 
 # Set type conversion / 1 indirection
-function SimpleCR{ℙ}(r::Real, l::Real, d::Real, v::Real) where {ℙ <: FLOAT}
-    return SimpleCR(ℙ.((r, l, d, v))...)
+function SimpleCR{ℙ}(R::Real, L::Real, D::Real, r::Real) where {ℙ <: FLOAT}
+    return SimpleCR(ℙ.((R, L, D, r))...)
 end
 
 # Promotion type conversion / 2 indirections
-function SimpleCR(r::Real, l::Real, d::Real, v::Real)
-    ℙ = promote_type(typeof.((r, l, d, v))...)
+function SimpleCR(R::Real, L::Real, D::Real, r::Real)
+    ℙ = promote_type(typeof.((R, L, D, r))...)
     ℙ = ℙ <: FLOAT ? ℙ : Float64
-    return SimpleCR{ℙ}(r, l, d, v)
+    return SimpleCR{ℙ}(R, L, D, r)
 end
 
 # Set type with unit conversion and stripping / 2 indirections
 function SimpleCR{ℙ}(
-        r::Unitful.Length{Real},
-        l::Unitful.Length{Real},
-        d::Unitful.Length{Real},
-        v::Unitful.Volume{Real}
+        R::Unitful.Length{Real},
+        L::Unitful.Length{Real},
+        D::Unitful.Length{Real},
+        r::Unitful.Volume{Real}
     ) where {ℙ <: FLOAT}
     return SimpleCR{ℙ}(
-        uconvert(u"m", r).val,
-        uconvert(u"m", l).val,
-        uconvert(u"m", d).val,
-        uconvert(u"m^3", v).val,
+        uconvert(u"m", R).val,
+        uconvert(u"m", L).val,
+        uconvert(u"m", D).val,
+        uconvert(u"m^3", r).val,
     )
 end
 
 # Promotion type with unit conversion and stripping / 3 indirections
 function SimpleCR(
-        r::Unitful.Length{Real},
-        l::Unitful.Length{Real},
-        d::Unitful.Length{Real},
-        v::Unitful.Volume{Real}
+        R::Unitful.Length{Real},
+        L::Unitful.Length{Real},
+        D::Unitful.Length{Real},
+        r::Unitful.Volume{Real}
     )
     return SimpleCR(
-        uconvert(u"m", r).val,
-        uconvert(u"m", l).val,
-        uconvert(u"m", d).val,
-        uconvert(u"m^3", v).val,
+        uconvert(u"m", R).val,
+        uconvert(u"m", L).val,
+        uconvert(u"m", D).val,
+        uconvert(u"m^3", r).val,
     )
 end
 
@@ -73,9 +73,15 @@ end
 
 import Base: convert
 
-function convert(::Type{SimpleCR{ℙ}}, 𝑥::SimpleCR{ℚ}) where {ℙ <: FLOAT, ℚ <: FLOAT}
-    return SimpleCR{ℙ}(𝑥.R, 𝑥.L, 𝑥.D, 𝑥.V)
+function convert(::Type{SimpleCR{ℙ}}, ξ::SimpleCR{ℚ}) where {ℙ <: FLOAT, ℚ <: FLOAT}
+    return SimpleCR{ℙ}(ξ.R, ξ.L, ξ.D, ξ.r)
 end
+
+import Base: Float16, Float32, Float64
+
+Float16(ξ::SimpleCR) = convert(SimpleCR{Float16}, ξ)
+Float32(ξ::SimpleCR) = convert(SimpleCR{Float32}, ξ)
+Float64(ξ::SimpleCR) = convert(SimpleCR{Float64}, ξ)
 
 # Promotions
 # ----------
@@ -95,40 +101,41 @@ export SimpleCR
 # -------------------------------
 
 # Stored data
-Radius(𝑥::SimpleCR) = 𝑥.R
-Length(𝑥::SimpleCR) = 𝑥.L
-Diameter(𝑥::SimpleCR) = 𝑥.D
-Vmin(𝑥::SimpleCR) = 𝑥.V
+Radius(ξ::SimpleCR) = ξ.R
+Length(ξ::SimpleCR) = ξ.L
+Diameter(ξ::SimpleCR) = ξ.D
+VRatio(ξ::SimpleCR) = ξ.r
+Ratio = VRatio
 
 # Length relations
-Stroke(𝑥::SimpleCR) = 2 * 𝑥.R
+Stroke(ξ::SimpleCR) = 2 * ξ.R
 
 # Area relations
-Area(𝑥::SimpleCR) = π * 𝑥.D^2 / 4
+Area(ξ::SimpleCR) = π * ξ.D^2 / 4
 
 # Volume relations
-Vdu(𝑥::SimpleCR) = Stroke(𝑥) * Area(𝑥)
-Vmax(𝑥::SimpleCR) = Vmin(𝑥) + Vdu(𝑥)
+Vdu(ξ::SimpleCR) = Stroke(ξ) * Area(ξ)
+Vmin(ξ::SimpleCR) = Vdu(ξ) / (ξ.r - 1)
+Vmax(ξ::SimpleCR) = ξ.r * Vmin(ξ)
 
 # Ratio relations
-rv(𝑥::SimpleCR) = Vmax(𝑥) / Vmin(𝑥)
-rLR(𝑥::SimpleCR) = 𝑥.L / 𝑥.R
-rRL(𝑥::SimpleCR) = 𝑥.R / 𝑥.L
-rSD(𝑥::SimpleCR) = 𝑥.S / 𝑥.D
-rDS(𝑥::SimpleCR) = 𝑥.D / 𝑥.S
+rLR(ξ::SimpleCR) = ξ.L / ξ.R
+rRL(ξ::SimpleCR) = ξ.R / ξ.L
+rSD(ξ::SimpleCR) = ξ.S / ξ.D
+rDS(ξ::SimpleCR) = ξ.D / ξ.S
 
 # Type Functor
-(𝑥::SimpleCR)(units = false) = begin
+(ξ::SimpleCR{ℙ})(units = false) where ℙ = begin
     Bool(units) ? (
-            r = Radius(𝑥) * u"m",
-            L = Length(𝑥) * u"m",
-            D = Diameter(𝑥) * u"m",
-            Vmin = Vmin(𝑥) * u"m^3",
+            R = Radius(ξ) * u"m",
+            L = Length(ξ) * u"m",
+            D = Diameter(ξ) * u"m",
+            r = Quantity{ℙ, NoDims, typeof(NoUnits)}(VRatio(ξ)),
         ) : (
-            r = Radius(𝑥),
-            L = Length(𝑥),
-            D = Diameter(𝑥),
-            Vmin = Vmin(𝑥),
+            R = Radius(ξ),
+            L = Length(ξ),
+            D = Diameter(ξ),
+            r = VRatio(ξ),
         )
 end
 
@@ -136,13 +143,13 @@ end
 # ---------------------
 
 # Position from TDC; 𝛼 in rad
-x(𝑥::SimpleCR{ℙ}, 𝛼::Real) where {ℙ} = begin
+x(ξ::SimpleCR{ℙ}, 𝛼::Real) where {ℙ} = begin
     𝟙 = one(ℙ)
-    LR = [𝑥.L 𝑥.R]
-    sc = [𝟙 - √(𝟙 - (rRL(𝑥) * sin(ℙ(𝛼)))^2), 𝟙 - cos(ℙ(𝛼))]
+    LR = [ξ.L ξ.R]
+    sc = [𝟙 - √(𝟙 - (rRL(ξ) * sin(ℙ(𝛼)))^2), 𝟙 - cos(ℙ(𝛼))]
     return (LR * sc)[1]
 end
 
 # Instantaneous volume; 𝛼 in rad
-V(𝑥::SimpleCR, 𝛼::Real) = Vmin(𝑥) + Area(𝑥) * x(𝑥, 𝛼)
+V(ξ::SimpleCR, 𝛼::Real) = Vmin(ξ) + Area(ξ) * x(ξ, 𝛼)
 

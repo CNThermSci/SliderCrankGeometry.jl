@@ -73,8 +73,8 @@ end
 
 import Base: convert
 
-function convert(::Type{SimpleCR{ℙ}}, x::SimpleCR{ℚ}) where {ℙ <: FLOAT, ℚ <: FLOAT}
-    return SimpleCR{ℙ}(x.R, x.L, x.D, x.V)
+function convert(::Type{SimpleCR{ℙ}}, 𝑥::SimpleCR{ℚ}) where {ℙ <: FLOAT, ℚ <: FLOAT}
+    return SimpleCR{ℙ}(𝑥.R, 𝑥.L, 𝑥.D, 𝑥.V)
 end
 
 # Promotions
@@ -95,38 +95,53 @@ export SimpleCR
 # -------------------------------
 
 # Stored data
-Radius(x::SimpleCR) = x.R
-Length(x::SimpleCR) = x.L
-Diameter(x::SimpleCR) = x.D
-Vmin(x::SimpleRC) = x.V
+Radius(𝑥::SimpleCR) = 𝑥.R
+Length(𝑥::SimpleCR) = 𝑥.L
+Diameter(𝑥::SimpleCR) = 𝑥.D
+Vmin(𝑥::SimpleRC) = 𝑥.V
 
 # Length relations
-Stroke(x::SimpleRC) = 2 * x.R
+Stroke(𝑥::SimpleRC) = 2 * 𝑥.R
 
 # Area relations
-Area(x::SimpleRC) = π * x.D^2 / 4
+Area(𝑥::SimpleRC) = π * 𝑥.D^2 / 4
 
 # Volume relations
-Vdu(x::SimpleRC) = Stroke(x) * Area(x)
-Vmax(x::SimpleRC) = Vmin(x) + Vdu(x)
+Vdu(𝑥::SimpleRC) = Stroke(x) * Area(x)
+Vmax(𝑥::SimpleRC) = Vmin(x) + Vdu(x)
 
 # Ratio relations
-rv(x::SimpleRC) = Vmax(x) / Vmin(x)
-rLR(x::SimpleRC) = x.L / x.R
-rRL(x::SimpleRC) = x.R / x.L
-rSD(x::SimpleRC) = x.S / x.D
-rDS(x::SimpleRC) = x.D / x.S
+rv(𝑥::SimpleRC) = Vmax(x) / Vmin(x)
+rLR(𝑥::SimpleRC) = 𝑥.L / 𝑥.R
+rRL(𝑥::SimpleRC) = 𝑥.R / 𝑥.L
+rSD(𝑥::SimpleRC) = 𝑥.S / 𝑥.D
+rDS(𝑥::SimpleRC) = 𝑥.D / 𝑥.S
+
+# Type Functor
+(𝑥::SimpleCR)(units = false) = begin
+    Bool(units) ? (
+            r = Radius(𝑥) * u"m",
+            L = Length(𝑥) * u"m",
+            D = Diameter(𝑥) * u"m",
+            Vmin = Vmin(𝑥) * u"m^3",
+        ) : (
+            r = Radius(𝑥),
+            L = Length(𝑥),
+            D = Diameter(𝑥),
+            Vmin = Vmin(𝑥),
+        )
+end
 
 # User-facing functions
 # ---------------------
 
-x()
+# Position from TDC; 𝛼 in rad
+x(𝑥::SimpleRC{ℙ}, 𝛼::ℙ) where {ℙ} = begin
+    𝟙 = one(ℙ)
+    LR = [𝑥.L 𝑥.R]
+    sc = [𝟙 - √(𝟙 - (rLR(𝑥) * sin(𝛼))^2), 𝟙 - cos(𝛼)]
+    return (LR * sc)[1]
+end
 
-# Type Functor
-(x::SimpleCR)(units = false) =
-    (
-    R = x.R,
-    L = x.L,
-    D = x.D,
-    V = x.V,
-)
+# Instantaneous volume; 𝛼 in rad
+V(𝑥::SimpleRC{ℙ}, 𝛼::ℙ) where {ℙ} = Vmin(𝑥) + Area(𝑥) * x(𝑥, 𝛼)

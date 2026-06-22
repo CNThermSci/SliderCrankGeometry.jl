@@ -89,3 +89,20 @@ end
 # ------
 
 export SimpleCR
+
+# User-facing functions
+# ---------------------
+
+# Functor
+(x::SimpleCR)(units = false) =
+    Bool(units) ? (
+        R = x.R * u"m",
+        L = x.L * u"m",
+        D = x.D * u"m",
+        V0 = x.V * u"m^3",
+    ) : (
+        R = x.R,
+        L = x.L,
+        D = x.D,
+        V0 = x.V,
+    )

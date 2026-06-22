@@ -91,8 +91,8 @@ end
 
 export SimpleCR
 
-# User-facing functions
-# ---------------------
+# User-facing parameter functions
+# -------------------------------
 
 # Stored data
 Radius(x::SimpleCR) = x.R
@@ -104,7 +104,7 @@ Vmin(x::SimpleRC) = x.V
 Stroke(x::SimpleRC) = 2 * x.R
 
 # Area relations
-Area(x::SimpleRC) = π * x.D ^ 2 / 4
+Area(x::SimpleRC) = π * x.D^2 / 4
 
 # Volume relations
 Vdu(x::SimpleRC) = Stroke(x) * Area(x)
@@ -117,12 +117,16 @@ rRL(x::SimpleRC) = x.R / x.L
 rSD(x::SimpleRC) = x.S / x.D
 rDS(x::SimpleRC) = x.D / x.S
 
+# User-facing functions
+# ---------------------
+
+x()
+
 # Type Functor
 (x::SimpleCR)(units = false) =
     (
-        R = x.R,
-        L = x.L,
-        D = x.D,
-        V = ,
-    )
-
+    R = x.R,
+    L = x.L,
+    D = x.D,
+    V = x.V,
+)

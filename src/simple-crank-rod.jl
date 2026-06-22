@@ -94,16 +94,42 @@ export SimpleCR
 # User-facing functions
 # ---------------------
 
+# Stored data
+Radius(x::SimpleCR{ℙ}, units = false) where ℙ = Bool(units) ? x.R * u"m" : x.R
+Length(x::SimpleCR{ℙ}, units = false) where ℙ = Bool(units) ? x.L * u"m" : x.L
+Diameter(x::SimpleCR{ℙ}, units = false) where ℙ = Bool(units) ? x.D * u"m" : x.D
+Vmin(x::SimpleRC{ℙ}, units = false) where ℙ = Bool(units) ? x.V * u"m^3" : x.V
+
+# Length relations
+Stroke(x::SimpleRC{ℙ}, units = false) where ℙ = begin
+    𝑢 = Bool(unit) ? u"m" : one(ℙ)
+    return 2 * x.R * 𝑢
+end
+
+# Area relations
+Area(x::SimpleRC{ℙ}, units = false) where ℙ = begin
+    𝑢 = Bool(unit) ? u"m^2" : one(ℙ)
+    return (π * x.D ^ 2 / 4) * 𝑢
+end
+
+# Volume relations
+Vdu(x::SimpleRC{ℙ}, units = false) where ℙ = begin
+    𝑢 = Bool(unit) ? u"m^3" : one(ℙ)
+    return Stroke(x) * Area(x) * 𝑢
+end
+
+Vmax(x::SimpleRC{ℙ}, units = false) where ℙ = begin
+    𝑢 = Bool(unit) ? u"m^3" : one(ℙ)
+    return (Vmin(x) + Vdu(x)) * 𝑢
+end
+
+
 # Type Functor
 (x::SimpleCR)(units = false) =
-    Bool(units) ? (
-        R = x.R * u"m",
-        L = x.L * u"m",
-        D = x.D * u"m",
-        V0 = x.V * u"m^3",
-    ) : (
+    (
         R = x.R,
         L = x.L,
         D = x.D,
-        V0 = x.V,
+        V = ,
     )
+

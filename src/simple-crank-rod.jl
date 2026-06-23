@@ -219,4 +219,23 @@ _l(ξ::SimpleCR, α::Real) = sqrt(ξ.L^2 - _h(ξ, α)^2)
 ϕ″(ξ::SimpleCR{ℙ}, α::Real, α′::Real, α″::Real) where {ℙ} = (𝐚(ξ, α) * 𝛀(ξ, α′, α″))[1]
 
 # Linear acceleration
-
+𝐲p(ξ::SimpleCR{ℙ}, α::Real) where {ℙ} = begin
+    ypω = - _r(ξ, α) * (one(ℙ) + βy(ξ, α)) - _h(ξ, α) * 𝐚(ξ, α)[1]
+    ypω′ = - _h(ξ, α) * (one(ℙ) + βy(ξ, α))
+    return [ypω ypω′]
+end
+𝐱r(ξ::SimpleCR{ℙ}, rg::Real, α::Real) where {ℙ} = begin
+    @assert(0 < rg < 1, "Error: rg ∉ (0, 1)")
+    xrω = _h(ξ, α) * (ℙ(rg) - one(ℙ))
+    xrω′ = _r(ξ, α) * (one(ℙ) - ℙ(rg))
+    return [xrω xrω′]
+end
+𝐲r(ξ::SimpleCR{ℙ}, rg::Real, α::Real) where {ℙ} = begin
+    @assert(0 < rg < 1, "Error: rg ∉ (0, 1)")
+    yrω = - _r(ξ, α) * (one(ℙ) + ℙ(rg) * βy(ξ, α)) - _h(ξ, α) * ℙ(rg) * 𝐚(ξ, α)[1]
+    yrω′ = - _h(ξ, α) * (one(ℙ) + ℙ(rg) * βy(ξ, α))
+    return [yrω yrω′]
+end
+yp″(ξ::SimpleCR, α::Real, α′::Real, α″::Real) = (𝐲p(ξ, α) * 𝛀(ξ, α′, α″))[1]
+xr″(ξ::SimpleCR, rg::Real, α::Real, α′::Real, α″::Real) = (𝐱r(ξ, rg, α) * 𝛀(ξ, α′, α″))[1]
+yr″(ξ::SimpleCR, rg::Real, α::Real, α′::Real, α″::Real) = (𝐲r(ξ, rg, α) * 𝛀(ξ, α′, α″))[1]

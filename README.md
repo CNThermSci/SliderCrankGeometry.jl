@@ -73,6 +73,42 @@ julia> cr == CR
 true
 ```
 
+### Example 2 – `SimpleCR` engine kinematics from ratios and cylinder displacement
+
+Suppose we want to describe the kinematics of a 4-cylinder, square ($r_{DS} = 1$), $2.0 L$
+engine with a $11:1$ compression ratio and rod length to crank radius ratio $r_{LR} = 3.5$.
+There is a convenience constructor for this scenario:
+
+```julia
+julia> CR = SimpleCR(rDS = 1, rLR = 3.5, Vdu = 2.0/4, r = 11)
+SimpleCR{Float64}(0.4301270069140498, 1.5054445241991743, 0.8602540138280996, 11.0)
+```
+
+Suppose further that we'd want to use IEEE-754 single precision floats. We could `convert` the
+`SimpleCR{Float64}` type into a `SimpleCR{Float32}` one either explicitly or implicitly, as:
+
+```julia
+julia> convert(SimpleCR{Float32}, CR)
+SimpleCR{Float32}(0.430127f0, 1.5054445f0, 0.860254f0, 11.0f0)
+
+julia> SimpleCR{Float32}[CR][1]
+SimpleCR{Float32}(0.430127f0, 1.5054445f0, 0.860254f0, 11.0f0)
+```
+
+Or simply use another convenience conversion as:
+
+```julia
+julia> Float32(CR)
+SimpleCR{Float32}(0.430127f0, 1.5054445f0, 0.860254f0, 11.0f0)
+```
+
+The functor output is consistent with the internal floating point precision:
+
+```julia
+julia> Float32(CR)()
+(R = 0.430127f0, L = 1.5054445f0, D = 0.860254f0, r = 11.0f0, S = 0.860254f0, A = 0.58122367f0, x0 = 0.086025394f0, Vdu = 0.49999997f0, Vmin = 0.049999997f0, Vmax = 0.54999995f0, rLR = 3.5f0, rDS = 1.0f0)
+```
+
 ## Author
 
 Prof. C. Naaktgeboren, PhD. [Lattes](http://lattes.cnpq.br/8621139258082919).

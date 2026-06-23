@@ -154,7 +154,7 @@ end
 # Convenience functions for construction
 # --------------------------------------
 
-# (R, L, D) from ratios, engine displacement, and cylinder count (opt)
+# (R, L, D) from ratios and cylinder displacement
 function RLD(; rDS::Real = 1, rLR::Real = 4, Vdu::Real)
     @assert(rLR > 1, "Error: rLR <= 1")
     @assert(Vdu > 0, "Error: Vdu <= 0")
@@ -164,8 +164,6 @@ function RLD(; rDS::Real = 1, rLR::Real = 4, Vdu::Real)
     L = R * rLR
     return (R, L, D)
 end
-
-export RLD
 
 function SimpleCR(; rDS::Real = 1, rLR::Real = 4, Vdu::Real, r::Real)
     SimpleCR(RLD(rDS=rDS, rLR=rLR, Vdu=Vdu)..., r)

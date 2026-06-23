@@ -120,23 +120,55 @@ Vmax(ξ::SimpleCR) = ξ.r * Vmin(ξ)
 
 # Ratio relations
 rLR(ξ::SimpleCR) = ξ.L / ξ.R
-rRL(ξ::SimpleCR) = ξ.R / ξ.L
-rSD(ξ::SimpleCR) = ξ.S / ξ.D
-rDS(ξ::SimpleCR) = ξ.D / ξ.S
+rDS(ξ::SimpleCR) = ξ.D / Stroke(ξ)
 
 # Type Functor
-(ξ::SimpleCR{ℙ})(units = false) where ℙ = begin
+(ξ::SimpleCR{ℙ})(units = false) where {ℙ} = begin
     Bool(units) ? (
-            R = Radius(ξ) * u"m",
-            L = Length(ξ) * u"m",
-            D = Diameter(ξ) * u"m",
+            R = uconvert(u"mm", Radius(ξ) * u"m"),
+            L = uconvert(u"mm", Length(ξ) * u"m"),
+            D = uconvert(u"mm", Diameter(ξ) * u"m"),
             r = Quantity{ℙ, NoDims, typeof(NoUnits)}(VRatio(ξ)),
+            S = uconvert(u"mm", Stroke(ξ) * u"m"),
+            A = uconvert(u"cm^2", Area(ξ) * u"m^2"),
+            Vdu = uconvert(u"L", Vdu(ξ) * u"m^3"),
+            Vmin = uconvert(u"L", Vmin(ξ) * u"m^3"),
+            Vmax = uconvert(u"L", Vmax(ξ) * u"m^3"),
+            rLR = Quantity{ℙ, NoDims, typeof(NoUnits)}(rLR(ξ)),
+            rDS = Quantity{ℙ, NoDims, typeof(NoUnits)}(rDS(ξ)),
         ) : (
             R = Radius(ξ),
             L = Length(ξ),
             D = Diameter(ξ),
             r = VRatio(ξ),
+            S = Stroke(ξ),
+            A = Area(ξ),
+            Vdu = Vdu(ξ),
+            Vmin = Vmin(ξ),
+            Vmax = Vmax(ξ),
+            rLR = rLR(ξ),
+            rDS = rDS(ξ),
         )
+end
+
+# Convenience functions for construction
+# --------------------------------------
+
+# (R, L, D) from ratios, engine displacement, and cylinder count (opt)
+function RLD(; rDS::Real = 1, rLR::Real = 4, Vdu::Real)
+    @assert(rLR > 1, "Error: rLR <= 1")
+    @assert(Vdu > 0, "Error: Vdu <= 0")
+    S = cbrt(4 * Vdu / (π * rDS ^ 2))
+    D = S * rDS
+    R = S / 2
+    L = R * rLR
+    return (R, L, D)
+end
+
+export RLD
+
+function SimpleCR(; rDS::Real = 1, rLR::Real = 4, Vdu::Real, r::Real)
+    SimpleCR(RLD(rDS=rDS, rLR=rLR, Vdu=Vdu)..., r)
 end
 
 # User-facing functions
@@ -146,10 +178,15 @@ end
 x(ξ::SimpleCR{ℙ}, 𝛼::Real) where {ℙ} = begin
     𝟙 = one(ℙ)
     LR = [ξ.L ξ.R]
-    sc = [𝟙 - √(𝟙 - (rRL(ξ) * sin(ℙ(𝛼)))^2), 𝟙 - cos(ℙ(𝛼))]
+    sc = [𝟙 - √(𝟙 - (sin(ℙ(𝛼)) / rRL(ξ))^2), 𝟙 - cos(ℙ(𝛼))]
     return (LR * sc)[1]
 end
 
 # Instantaneous volume; 𝛼 in rad
 V(ξ::SimpleCR, 𝛼::Real) = Vmin(ξ) + Area(ξ) * x(ξ, 𝛼)
 
+# z-cylinder engine displaced volume
+Vd(ξ::SimpleCR, z::Integer) = begin
+    @assert(z >= 1, "Error: z < 1")
+    Vdu(ξ) * z
+end

@@ -21,7 +21,7 @@ Currently supported models are:
 
 - All data fields are stored as plain `ℙ <: Base.IEEEFloat` types;
 - It is _assumed_ that values are in SI units, i.e., lengths in $m$, volumes in $m^3$, etc.;
-- Constructors may accept `Real` and `Quantity{Real}` arguments;
+- Constructors may accept `Real` and `Quantity{<:Real}` arguments;
 - Types are `functor`s that output commonly used derived quantities;
 - Functor argument control whether implicit units are applied to the output.
 

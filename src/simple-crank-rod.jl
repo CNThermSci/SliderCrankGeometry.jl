@@ -199,20 +199,16 @@ end
 # ----------------------------
 
 # Projections
-raw"'h' can be typed by \scrh<tab>"
-h(ξ::SimpleCR{ℙ}, α::Real) where {ℙ} = ξ.R * sin(ℙ(α))
-raw"'r' can be typed by \scrr<tab>"
-r(ξ::SimpleCR{ℙ}, α::Real) where {ℙ} = ξ.R * cos(ℙ(α))
-raw"'𝓁' can be typed by \scrl<tab>"
-𝓁(ξ::SimpleCR, α::Real) = sqrt(ξ.L^2 - h(ξ, α)^2)
+𝒽(ξ::SimpleCR{ℙ}, α::Real) where ℙ = ξ.R * sin(ℙ(α))
+𝓇(ξ::SimpleCR{ℙ}, α::Real) where ℙ = ξ.R * cos(ℙ(α))
+𝓁(ξ::SimpleCR, α::Real) = sqrt(ξ.L^2 - 𝒽(ξ, α)^2)
 
 # Angles
-raw"'ϕ' can be typed by \phi<tab>"
-ϕ(ξ::SimpleCR, α::Real) = atan(h(ξ, α), 𝓁(ξ, α))
+ϕ(ξ::SimpleCR, α::Real) = atan(𝒽(ξ, α), 𝓁(ξ, α))
 
 # Ratios
-βy(ξ::SimpleCR, α::Real) = r(ξ, α) / 𝓁(ξ, α)
-βx(ξ::SimpleCR, α::Real) = h(ξ, α) / 𝓁(ξ, α)
+βy(ξ::SimpleCR, α::Real) = 𝓇(ξ, α) / 𝓁(ξ, α)
+βx(ξ::SimpleCR, α::Real) = 𝒽(ξ, α) / 𝓁(ξ, α)
 
 # Angular speed
-dotϕ(ξ::SimpleCR{ℙ}, α::Real, dotα::Real) where {ℙ} = βy(ξ, α) * ℙ(dotα)
+dotϕ(ξ::SimpleCR{ℙ}, α::Real, dotα::Real) where ℙ = βy(ξ, α) * ℙ(dotα)

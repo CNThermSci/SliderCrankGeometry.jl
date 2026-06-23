@@ -138,7 +138,7 @@ How to cite this project:
   journal      = {GitHub repository},
   publisher    = {GitHub},
   url          = {https://github.com/EduThermSci/EngineKinematics.jl},
-  note         = {pre-release 0.1.0 of 2026-06},
+  note         = {release 0.1.0 of 2026-06-23},
 }
 ```
 

@@ -109,6 +109,7 @@ Ratio = VRatio
 
 # Length relations
 Stroke(ξ::SimpleCR) = 2 * ξ.R
+x0(ξ::SimpleCR) = Vmin(ξ) / Area(ξ)
 
 # Area relations
 Area(ξ::SimpleCR) = π * ξ.D^2 / 4
@@ -131,6 +132,7 @@ rDS(ξ::SimpleCR) = ξ.D / Stroke(ξ)
             r = Quantity{ℙ, NoDims, typeof(NoUnits)}(VRatio(ξ)),
             S = uconvert(u"mm", Stroke(ξ) * u"m"),
             A = uconvert(u"cm^2", Area(ξ) * u"m^2"),
+            x0 = uconvert(u"mm", x0(ξ) * u"m"),
             Vdu = uconvert(u"L", Vdu(ξ) * u"m^3"),
             Vmin = uconvert(u"L", Vmin(ξ) * u"m^3"),
             Vmax = uconvert(u"L", Vmax(ξ) * u"m^3"),
@@ -143,6 +145,7 @@ rDS(ξ::SimpleCR) = ξ.D / Stroke(ξ)
             r = VRatio(ξ),
             S = Stroke(ξ),
             A = Area(ξ),
+            x0 = x0(ξ),
             Vdu = Vdu(ξ),
             Vmin = Vmin(ξ),
             Vmax = Vmax(ξ),
@@ -158,7 +161,7 @@ end
 function RLD(; rDS::Real = 1, rLR::Real = 4, Vdu::Real)
     @assert(rLR > 1, "Error: rLR <= 1")
     @assert(Vdu > 0, "Error: Vdu <= 0")
-    S = cbrt(4 * Vdu / (π * rDS ^ 2))
+    S = cbrt(4 * Vdu / (π * rDS^2))
     D = S * rDS
     R = S / 2
     L = R * rLR
@@ -166,19 +169,22 @@ function RLD(; rDS::Real = 1, rLR::Real = 4, Vdu::Real)
 end
 
 function SimpleCR(; rDS::Real = 1, rLR::Real = 4, Vdu::Real, r::Real)
-    SimpleCR(RLD(rDS=rDS, rLR=rLR, Vdu=Vdu)..., r)
+    return SimpleCR(RLD(rDS = rDS, rLR = rLR, Vdu = Vdu)..., r)
 end
 
 # User-facing functions
 # ---------------------
 
-# Position from TDC; 𝛼 in rad
+# Piston position from TDC; 𝛼 in rad
 x(ξ::SimpleCR{ℙ}, 𝛼::Real) where {ℙ} = begin
     𝟙 = one(ℙ)
     LR = [ξ.L ξ.R]
-    sc = [𝟙 - √(𝟙 - (sin(ℙ(𝛼)) / rRL(ξ))^2), 𝟙 - cos(ℙ(𝛼))]
+    sc = [𝟙 - √(𝟙 - (sin(ℙ(𝛼)) / rLR(ξ))^2), 𝟙 - cos(ℙ(𝛼))]
     return (LR * sc)[1]
 end
+
+# Piston position from engine head (simplified as x0 + x(𝛼))
+xHead(ξ::SimpleCR, 𝛼::Real) = x0(ξ) + 𝓍(ξ, 𝛼)
 
 # Instantaneous volume; 𝛼 in rad
 V(ξ::SimpleCR, 𝛼::Real) = Vmin(ξ) + Area(ξ) * x(ξ, 𝛼)
@@ -188,3 +194,25 @@ Vd(ξ::SimpleCR, z::Integer) = begin
     @assert(z >= 1, "Error: z < 1")
     Vdu(ξ) * z
 end
+
+# Crank-Rod mechanism geometry
+# ----------------------------
+
+# Projections
+raw"'𝒽' can be typed by \scrh<tab>"
+𝒽(ξ::SimpleCR, 𝛼::Real) = ξ.R * sin(𝛼)
+raw"'𝓇' can be typed by \scrr<tab>"
+𝓇(ξ::SimpleCR, 𝛼::Real) = ξ.R * cos(𝛼)
+raw"'𝓁' can be typed by \scrl<tab>"
+𝓁(ξ::SimpleCR, 𝛼::Real) = sqrt(ξ.L^2 - 𝒽(ξ, 𝛼)^2)
+
+# Angles
+raw"'ϕ' can be typed by \phi<tab>"
+ϕ(ξ::SimpleCR, 𝛼::Real) = atan(𝒽(ξ, 𝛼), 𝓁(ξ, 𝛼))
+
+# Ratios
+βy(ξ::SimpleCR, 𝛼::Real) = ξ.R / 𝓁(ξ, 𝛼)
+βx(ξ::SimpleCR, 𝛼::Real) = 𝒽(ξ, 𝛼) / 𝓁(ξ, 𝛼)
+
+# Angular speed
+# dotϕ(ξ::SimpleCR, 𝛼::Real)

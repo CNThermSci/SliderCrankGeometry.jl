@@ -184,7 +184,7 @@ x(ξ::SimpleCR{ℙ}, α::Real) where {ℙ} = begin
 end
 
 # Piston position from engine head (simplified as x0 + x(α))
-xHead(ξ::SimpleCR, α::Real) = x0(ξ) + 𝓍(ξ, α)
+xHead(ξ::SimpleCR, α::Real) = x0(ξ) + x(ξ, α)
 
 # Instantaneous volume; α in rad
 V(ξ::SimpleCR, α::Real) = Vmin(ξ) + Area(ξ) * x(ξ, α)
@@ -215,4 +215,4 @@ raw"'ϕ' can be typed by \phi<tab>"
 βx(ξ::SimpleCR, α::Real) = 𝒽(ξ, α) / 𝓁(ξ, α)
 
 # Angular speed
-# dotϕ(ξ::SimpleCR, α::Real)
+dotϕ(ξ::SimpleCR, α::Real, dotα::Real) = βy(ξ, α) * dotα

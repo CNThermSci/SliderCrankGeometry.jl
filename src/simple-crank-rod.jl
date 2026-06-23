@@ -40,31 +40,31 @@ end
 
 # Set type with unit conversion and stripping / 2 indirections
 function SimpleCR{ℙ}(
-        R::Unitful.Length{Real},
-        L::Unitful.Length{Real},
-        D::Unitful.Length{Real},
-        r::Unitful.Volume{Real}
+        R::Unitful.Length{<:Real},
+        L::Unitful.Length{<:Real},
+        D::Unitful.Length{<:Real},
+        r::Real,
     ) where {ℙ <: FLOAT}
     return SimpleCR{ℙ}(
         uconvert(u"m", R).val,
         uconvert(u"m", L).val,
         uconvert(u"m", D).val,
-        uconvert(u"m^3", r).val,
+        r,
     )
 end
 
 # Promotion type with unit conversion and stripping / 3 indirections
 function SimpleCR(
-        R::Unitful.Length{Real},
-        L::Unitful.Length{Real},
-        D::Unitful.Length{Real},
-        r::Unitful.Volume{Real}
+        R::Unitful.Length{<:Real},
+        L::Unitful.Length{<:Real},
+        D::Unitful.Length{<:Real},
+        r::Real,
     )
     return SimpleCR(
         uconvert(u"m", R).val,
         uconvert(u"m", L).val,
         uconvert(u"m", D).val,
-        uconvert(u"m^3", r).val,
+        r,
     )
 end
 

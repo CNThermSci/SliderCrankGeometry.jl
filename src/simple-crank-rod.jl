@@ -200,9 +200,9 @@ end
 
 # Projections
 raw"'𝒽' can be typed by \scrh<tab>"
-𝒽(ξ::SimpleCR, α::Real) = ξ.R * sin(α)
+𝒽(ξ::SimpleCR{ℙ}, α::Real) where ℙ = ξ.R * sin(ℙ(α))
 raw"'𝓇' can be typed by \scrr<tab>"
-𝓇(ξ::SimpleCR, α::Real) = ξ.R * cos(α)
+𝓇(ξ::SimpleCR{ℙ}, α::Real) where ℙ = ξ.R * cos(ℙ(α))
 raw"'𝓁' can be typed by \scrl<tab>"
 𝓁(ξ::SimpleCR, α::Real) = sqrt(ξ.L^2 - 𝒽(ξ, α)^2)
 
@@ -211,8 +211,8 @@ raw"'ϕ' can be typed by \phi<tab>"
 ϕ(ξ::SimpleCR, α::Real) = atan(𝒽(ξ, α), 𝓁(ξ, α))
 
 # Ratios
-βy(ξ::SimpleCR, α::Real) = ξ.R / 𝓁(ξ, α)
+βy(ξ::SimpleCR, α::Real) = 𝓇(ξ, α) / 𝓁(ξ, α)
 βx(ξ::SimpleCR, α::Real) = 𝒽(ξ, α) / 𝓁(ξ, α)
 
 # Angular speed
-dotϕ(ξ::SimpleCR, α::Real, dotα::Real) = βy(ξ, α) * dotα
+dotϕ(ξ::SimpleCR{ℙ}, α::Real, dotα::Real) where ℙ = βy(ξ, α) * ℙ(dotα)

@@ -199,16 +199,16 @@ end
 # ----------------------------
 
 # Projections
-𝒽(ξ::SimpleCR{ℙ}, α::Real) where ℙ = ξ.R * sin(ℙ(α))
-𝓇(ξ::SimpleCR{ℙ}, α::Real) where ℙ = ξ.R * cos(ℙ(α))
-𝓁(ξ::SimpleCR, α::Real) = sqrt(ξ.L^2 - 𝒽(ξ, α)^2)
+_h(ξ::SimpleCR{ℙ}, α::Real) where {ℙ} = ξ.R * sin(ℙ(α))
+_r(ξ::SimpleCR{ℙ}, α::Real) where {ℙ} = ξ.R * cos(ℙ(α))
+_l(ξ::SimpleCR, α::Real) = sqrt(ξ.L^2 - _h(ξ, α)^2)
 
 # Angles
-ϕ(ξ::SimpleCR, α::Real) = atan(𝒽(ξ, α), 𝓁(ξ, α))
+ϕ(ξ::SimpleCR, α::Real) = atan(_h(ξ, α), _l(ξ, α))
 
 # Ratios
-βy(ξ::SimpleCR, α::Real) = 𝓇(ξ, α) / 𝓁(ξ, α)
-βx(ξ::SimpleCR, α::Real) = 𝒽(ξ, α) / 𝓁(ξ, α)
+βy(ξ::SimpleCR, α::Real) = _r(ξ, α) / _l(ξ, α)
+βx(ξ::SimpleCR, α::Real) = _h(ξ, α) / _l(ξ, α)
 
 # Angular speed
-dotϕ(ξ::SimpleCR{ℙ}, α::Real, dotα::Real) where ℙ = βy(ξ, α) * ℙ(dotα)
+dotϕ(ξ::SimpleCR{ℙ}, α::Real, dotα::Real) where {ℙ} = βy(ξ, α) * ℙ(dotα)

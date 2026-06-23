@@ -76,7 +76,7 @@ true
 ### Example 2 – `SimpleCR` engine kinematics from ratios and cylinder displacement
 
 Suppose we want to describe the kinematics of a 4-cylinder, square ($r_{DS} = 1$), $2.0 L$
-engine with a $11:1$ compression ratio and rod length to crank radius ratio $r_{LR} = 3.5$.
+engine with a $11:1$ compression ratio, and rod length to crank radius ratio $r_{LR} = 3.5$.
 There is a convenience constructor for this scenario:
 
 ```julia

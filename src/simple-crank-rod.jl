@@ -175,19 +175,19 @@ end
 # User-facing functions
 # ---------------------
 
-# Piston position from TDC; 𝛼 in rad
-x(ξ::SimpleCR{ℙ}, 𝛼::Real) where {ℙ} = begin
+# Piston position from TDC; α in rad
+x(ξ::SimpleCR{ℙ}, α::Real) where {ℙ} = begin
     𝟙 = one(ℙ)
     LR = [ξ.L ξ.R]
-    sc = [𝟙 - √(𝟙 - (sin(ℙ(𝛼)) / rLR(ξ))^2), 𝟙 - cos(ℙ(𝛼))]
+    sc = [𝟙 - √(𝟙 - (sin(ℙ(α)) / rLR(ξ))^2), 𝟙 - cos(ℙ(α))]
     return (LR * sc)[1]
 end
 
-# Piston position from engine head (simplified as x0 + x(𝛼))
-xHead(ξ::SimpleCR, 𝛼::Real) = x0(ξ) + 𝓍(ξ, 𝛼)
+# Piston position from engine head (simplified as x0 + x(α))
+xHead(ξ::SimpleCR, α::Real) = x0(ξ) + 𝓍(ξ, α)
 
-# Instantaneous volume; 𝛼 in rad
-V(ξ::SimpleCR, 𝛼::Real) = Vmin(ξ) + Area(ξ) * x(ξ, 𝛼)
+# Instantaneous volume; α in rad
+V(ξ::SimpleCR, α::Real) = Vmin(ξ) + Area(ξ) * x(ξ, α)
 
 # z-cylinder engine displaced volume
 Vd(ξ::SimpleCR, z::Integer) = begin
@@ -200,19 +200,19 @@ end
 
 # Projections
 raw"'𝒽' can be typed by \scrh<tab>"
-𝒽(ξ::SimpleCR, 𝛼::Real) = ξ.R * sin(𝛼)
+𝒽(ξ::SimpleCR, α::Real) = ξ.R * sin(α)
 raw"'𝓇' can be typed by \scrr<tab>"
-𝓇(ξ::SimpleCR, 𝛼::Real) = ξ.R * cos(𝛼)
+𝓇(ξ::SimpleCR, α::Real) = ξ.R * cos(α)
 raw"'𝓁' can be typed by \scrl<tab>"
-𝓁(ξ::SimpleCR, 𝛼::Real) = sqrt(ξ.L^2 - 𝒽(ξ, 𝛼)^2)
+𝓁(ξ::SimpleCR, α::Real) = sqrt(ξ.L^2 - 𝒽(ξ, α)^2)
 
 # Angles
 raw"'ϕ' can be typed by \phi<tab>"
-ϕ(ξ::SimpleCR, 𝛼::Real) = atan(𝒽(ξ, 𝛼), 𝓁(ξ, 𝛼))
+ϕ(ξ::SimpleCR, α::Real) = atan(𝒽(ξ, α), 𝓁(ξ, α))
 
 # Ratios
-βy(ξ::SimpleCR, 𝛼::Real) = ξ.R / 𝓁(ξ, 𝛼)
-βx(ξ::SimpleCR, 𝛼::Real) = 𝒽(ξ, 𝛼) / 𝓁(ξ, 𝛼)
+βy(ξ::SimpleCR, α::Real) = ξ.R / 𝓁(ξ, α)
+βx(ξ::SimpleCR, α::Real) = 𝒽(ξ, α) / 𝓁(ξ, α)
 
 # Angular speed
-# dotϕ(ξ::SimpleCR, 𝛼::Real)
+# dotϕ(ξ::SimpleCR, α::Real)

@@ -80,8 +80,8 @@ engine with a $11:1$ compression ratio, and rod length to crank radius ratio $r_
 There is a convenience constructor for this scenario:
 
 ```julia
-julia> CR = SimpleCR(rDS = 1, rLR = 3.5, Vdu = 2.0/4, r = 11)
-SimpleCR{Float64}(0.4301270069140498, 1.5054445241991743, 0.8602540138280996, 11.0)
+julia> CR = SimpleCR(rDS = 1, rLR = 3.5, Vdu = 2.0e-3/4, r = 11)
+SimpleCR{Float64}(0.04301270069140498, 0.15054445241991743, 0.08602540138280997, 11.0)
 ```
 
 Suppose further that we'd want to use IEEE-754 single precision floats. We could `convert` the
@@ -98,16 +98,13 @@ SimpleCR{Float32}(0.430127f0, 1.5054445f0, 0.860254f0, 11.0f0)
 Or simply use another convenience conversion as:
 
 ```julia
-julia> Float32(CR)
-SimpleCR{Float32}(0.430127f0, 1.5054445f0, 0.860254f0, 11.0f0)
+julia> Float32(CR)()
+(R = 0.430127f0, L = 1.5054445f0, D = 0.860254f0, r = 11.0f0, S = 0.860254f0, A = 0.58122367f0, x0 = 0.086025394f0, Vdu = 0.49999997f0, Vmin = 0.049999997f0, Vmax = 0.54999995f0, rLR = 3.5f0, rDS = 1.0f0)
 ```
 
 The functor output is consistent with the internal floating point precision:
 
 ```julia
-julia> Float32(CR)()
-(R = 0.430127f0, L = 1.5054445f0, D = 0.860254f0, r = 11.0f0, S = 0.860254f0, A = 0.58122367f0, x0 = 0.086025394f0, Vdu = 0.49999997f0, Vmin = 0.049999997f0, Vmax = 0.54999995f0, rLR = 3.5f0, rDS = 1.0f0)
-
 julia> Float32(CR)(1)
 (R = 430.12698f0 mm, L = 1505.4446f0 mm, D = 860.25397f0 mm, r = 11.0f0, S = 860.25397f0 mm, A = 5812.237f0 cm^2, x0 = 86.0254f0 mm, Vdu = 499.99997f0 L, Vmin = 49.999996f0 L, Vmax = 549.99994f0 L, rLR = 3.5f0, rDS = 1.0f0)
 ```

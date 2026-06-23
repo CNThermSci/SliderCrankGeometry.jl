@@ -212,3 +212,8 @@ _l(ξ::SimpleCR, α::Real) = sqrt(ξ.L^2 - _h(ξ, α)^2)
 
 # Angular speed
 dotϕ(ξ::SimpleCR{ℙ}, α::Real, dotα::Real) where {ℙ} = βy(ξ, α) * ℙ(dotα)
+
+# Angular acceleration
+𝛀(dotα::Real, ddotα::Real) where {ℙ} = [dotα^2, ddotα]
+𝐚(ξ::SimpleCR{ℙ}, α::Real) where {ℙ} = [βx(ξ, α) * (βy(ξ, α)^2 - one(ℙ)) βy(ξ, α)]
+# ddotϕ(ξ::SimpleCR{ℙ}, α::Real, dotα::Real, ddotα::Real) where {ℙ} =

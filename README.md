@@ -65,7 +65,13 @@ $mm$ for parts linear dimensions, as well as $L$ (liters) for engine volumes, et
 
 Arbitrary units of consistent dimensions can be specified upon construction:
 
+```julia
+julia> cr = SimpleCR(80u"mm", 240u"mm", 160u"mm", 12.0)
+SimpleCR{Float64}(0.08, 0.24, 0.16, 12.0)
 
+julia> cr == CR
+true
+```
 
 ## Author
 

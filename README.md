@@ -45,6 +45,26 @@ julia> CR()
 (R = 0.08, L = 0.24, D = 0.16, r = 12.0, S = 0.16, A = 0.020106192982974676, x0 = 0.014545454545454547, Vdu = 0.0032169908772759484, Vmin = 0.0002924537161159953, Vmax = 0.0035094445933919437, rLR = 3.0, rDS = 1.0)
 ```
 
+The `SimpleCR` functor returns a `NamedTuple`, which can be more conveniently viewed in julia's
+`REPL` with the `pairs()` function:
+
+```julia
+julia> pairs(CR())
+pairs(::NamedTuple) with 12 entries:
+  :R    => 0.08
+  :L    => 0.24
+  :D    => 0.16
+  :r    => 12.0
+  :S    => 0.16
+  :A    => 0.0201062
+  :x0   => 0.0145455
+  :Vdu  => 0.00321699
+  :Vmin => 0.000292454
+  :Vmax => 0.00350944
+  :rLR  => 3.0
+  :rDS  => 1.0
+```
+
 When the `CR` object is called as a `function`, i.e., used as a `functor`, it outputs a named
 tuple with the following fields: all the stored fields plus the stroke `S`, the cylinder
 cross-section area `A`, the TDC piston-to-head gap `x0`, the piston displaced volume `Vdu`,

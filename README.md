@@ -77,6 +77,21 @@ Units are output whenever the functor `units` positional argument evaluates to `
 ```julia
 julia> CR(1)
 (R = 80.0 mm, L = 240.0 mm, D = 160.0 mm, r = 12.0, S = 160.0 mm, A = 201.06192982974676 cm^2, x0 = 14.545454545454547 mm, Vdu = 3.2169908772759483 L, Vmin = 0.2924537161159953 L, Vmax = 3.509444593391944 L, rLR = 3.0, rDS = 1.0)
+
+julia> pairs(CR(1))
+pairs(::NamedTuple) with 12 entries:
+  :R    => 80.0 mm
+  :L    => 240.0 mm
+  :D    => 160.0 mm
+  :r    => 12.0
+  :S    => 160.0 mm
+  :A    => 201.062 cm^2
+  :x0   => 14.5455 mm
+  :Vdu  => 3.21699 L
+  :Vmin => 0.292454 L
+  :Vmax => 3.50944 L
+  :rLR  => 3.0
+  :rDS  => 1.0
 ```
 
 It is worth noting that although values are internally stored under the conventions above of

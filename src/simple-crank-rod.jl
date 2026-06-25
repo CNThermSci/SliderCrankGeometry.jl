@@ -43,29 +43,26 @@ function SimpleCR{ℙ}(
         R::Unitful.Length{<:Real},
         L::Unitful.Length{<:Real},
         D::Unitful.Length{<:Real},
-        r::Real,
+        r::Union{Real, Quantity{<:Real}},
     ) where {ℙ <: FLOAT}
     return SimpleCR{ℙ}(
         uconvert(u"m", R).val,
         uconvert(u"m", L).val,
         uconvert(u"m", D).val,
-        r,
+        uconvert(NoUnits, r),
     )
 end
 
 # Promotion type with unit conversion and stripping / 3 indirections
 function SimpleCR(
-        R::Unitful.Length{<:Real},
-        L::Unitful.Length{<:Real},
-        D::Unitful.Length{<:Real},
-        r::Union{Real, Quantity{<:Real}},
-    )
-    return SimpleCR(
-        uconvert(u"m", R).val,
-        uconvert(u"m", L).val,
-        uconvert(u"m", D).val,
-        uconvert(NoUnits, r),
-    )
+        R::Unitful.Length{ℝ},
+        L::Unitful.Length{𝕃},
+        D::Unitful.Length{𝔻},
+        r::Union{Real, Quantity{𝕣}},
+    ) where {ℝ <: Real, 𝕃 <: Real, 𝔻 <: Real, 𝕣 <: Real}
+    ℙ = promote_type(ℝ, 𝕃, 𝔻, 𝕣)
+    ℙ = ℙ <: FLOAT ? ℙ : Float64
+    return SimpleCR{ℙ}(R, L, D, r)
 end
 
 # Arbitrary input kwargs constructor

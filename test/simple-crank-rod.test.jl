@@ -57,4 +57,3 @@ end
         @test SimpleCR(RLDr...) isa SimpleCR{ℙ}
     end
 end
-

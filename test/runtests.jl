@@ -1,6 +1,5 @@
 using EngineKinematics
 using Test
 
-@testset "EngineKinematics.jl" begin
-    # Write your tests here.
-end
+# EngineKinematics tests by source
+include("simple-crank-rod.test.jl")

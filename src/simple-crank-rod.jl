@@ -68,6 +68,20 @@ function SimpleCR(
     )
 end
 
+function SimpleCR(
+        R::Unitful.Length{<:Real},
+        L::Unitful.Length{<:Real},
+        D::Unitful.Length{<:Real},
+        r::Quantity{<:Real},
+    )
+    return SimpleCR(
+        uconvert(u"m", R).val,
+        uconvert(u"m", L).val,
+        uconvert(u"m", D).val,
+        uconvert(NoUnits, r),
+    )
+end
+
 # Arbitrary input kwargs constructor
 RULES = [
     # 2R / S = 1

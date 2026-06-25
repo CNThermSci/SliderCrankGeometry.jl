@@ -58,12 +58,17 @@ end
     end
 end
 
-@testset "simple-crank-rod.test.jl: kwargs external constructor                   " begin
-    # (R, L, D, r) inputs
-    KW = (R=1, L=2, D=1, r=2)
+function suffKwargsTest(; kwargs...)
+    KW = (; kwargs...) # Builds back NamedTuple from Base.Pairs
+    # Sufficient kwargs must pass
     @test SimpleCR(; KW...) isa SimpleCR
     for kw in [Base.structdiff(KW, NamedTuple{(k,)}) for k in keys(KW)]
+        # Incomplete kwargs must fail
         @test_throws AssertionError SimpleCR(; kw...)
     end
+end
+
+@testset "simple-crank-rod.test.jl: kwargs external constructor                   " begin
+    suffKwargsTest(R=1, L=2, D=1, r=2)
 end
 

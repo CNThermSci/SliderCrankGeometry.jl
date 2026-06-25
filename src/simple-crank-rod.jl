@@ -58,21 +58,7 @@ function SimpleCR(
         R::Unitful.Length{<:Real},
         L::Unitful.Length{<:Real},
         D::Unitful.Length{<:Real},
-        r::Real,
-    )
-    return SimpleCR(
-        uconvert(u"m", R).val,
-        uconvert(u"m", L).val,
-        uconvert(u"m", D).val,
-        r,
-    )
-end
-
-function SimpleCR(
-        R::Unitful.Length{<:Real},
-        L::Unitful.Length{<:Real},
-        D::Unitful.Length{<:Real},
-        r::Quantity{<:Real},
+        r::Union{Real, Quantity{<:Real}},
     )
     return SimpleCR(
         uconvert(u"m", R).val,
@@ -85,23 +71,23 @@ end
 # Arbitrary input kwargs constructor
 RULES = [
     # 2R / S = 1
-    (o = (:R,), i = (:S,), f = k -> (R = k.S / 2,),),
-    (o = (:S,), i = (:R,), f = k -> (S = 2 * k.R,),),
+    (o = (:R,), i = (:S,), f = k -> (R = k.S / 2,)),
+    (o = (:S,), i = (:R,), f = k -> (S = 2 * k.R,)),
     # rLR * rRL = 1
-    (o = (:rLR,), i = (:rRL,), f = k -> (rLR = inv(k.rRL),),),
-    (o = (:rRL,), i = (:rLR,), f = k -> (rRL = inv(k.rLR),),),
+    (o = (:rLR,), i = (:rRL,), f = k -> (rLR = inv(k.rRL),)),
+    (o = (:rRL,), i = (:rLR,), f = k -> (rRL = inv(k.rLR),)),
     # rDS * rSD = 1
-    (o = (:rDS,), i = (:rSD,), f = k -> (rDS = inv(k.rSD),),),
-    (o = (:rSD,), i = (:rDS,), f = k -> (rSD = inv(k.rDS),),),
+    (o = (:rDS,), i = (:rSD,), f = k -> (rDS = inv(k.rSD),)),
+    (o = (:rSD,), i = (:rDS,), f = k -> (rSD = inv(k.rDS),)),
     # A = π * D^2 / 4
-    (o = (:D,), i = (:A,), f = k -> (D = √(4 * k.A / π),),),
-    (o = (:A,), i = (:D,), f = k -> (A = π * k.D^2 / 4,),),
+    (o = (:D,), i = (:A,), f = k -> (D = √(4 * k.A / π),)),
+    (o = (:A,), i = (:D,), f = k -> (A = π * k.D^2 / 4,)),
     # rLR * R / L = 1
-    (o = (:R,), i = (:rLR, :L), f = k -> (R = k.L / k.rLR,),),
-    (o = (:L,), i = (:rLR, :R), f = k -> (L = k.rLR * k.R,),),
+    (o = (:R,), i = (:rLR, :L), f = k -> (R = k.L / k.rLR,)),
+    (o = (:L,), i = (:rLR, :R), f = k -> (L = k.rLR * k.R,)),
     # rDS * S / D = 1
-    (o = (:S,), i = (:rDS, :D), f = k -> (S = k.D / k.rDS,),),
-    (o = (:D,), i = (:rDS, :S), f = k -> (D = k.rDS * k.S,),),
+    (o = (:S,), i = (:rDS, :D), f = k -> (S = k.D / k.rDS,)),
+    (o = (:D,), i = (:rDS, :S), f = k -> (D = k.rDS * k.S,)),
     # r = Vmax / Vmin
     (o = (:r,), i = (:Vmax, :Vmin), f = k -> (r = k.Vmax / k.Vmin,)),
     (o = (:Vmax,), i = (:r, :Vmin), f = k -> (Vmax = k.Vmin * k.r,)),

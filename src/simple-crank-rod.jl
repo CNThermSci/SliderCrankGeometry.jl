@@ -68,6 +68,44 @@ function SimpleCR(
     )
 end
 
+# Arbitrary input kwargs constructor
+RULES = [
+    # One input rules
+    # ---------------
+    ( # R = S / 2
+        o = (:R,),
+        i = (:S,),
+        f = k -> (R = k.S/2,),
+    ),
+    ( # S = 2 * R
+        o = (:S,),
+        i = (:R,),
+        f = k -> (S = 2 * k.R,),
+    ),
+    # Two input rules
+    # ---------------
+    ( # R = L / rLR
+        o = (:R,),
+        i = (:rLR, :L),
+        f = k -> (R = k.L / k.rLR,),
+    ),
+    ( # L = rLR * R
+        o = (:L,),
+        i = (:rLR, :R),
+        f = k -> (L = k.rLR * k.R,),
+    ),
+    ( # S = D / rDS
+        o = (:S,),
+        i = (:rDS, :D),
+        f = k -> (S = k.D / k.rDS,),
+    ),
+    ( # D = rDS * S
+        o = (:D,),
+        i = (:rDS, :S),
+        f = k -> (D = k.rDS * k.S,),
+    ),
+]
+
 # Conversions
 # -----------
 

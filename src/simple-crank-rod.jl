@@ -70,40 +70,49 @@ end
 
 # Arbitrary input kwargs constructor
 RULES = [
-    # One input rules
-    # ---------------
-    ( # R = S / 2
-        o = (:R,),
-        i = (:S,),
-        f = k -> (R = k.S/2,),
-    ),
-    ( # S = 2 * R
-        o = (:S,),
-        i = (:R,),
-        f = k -> (S = 2 * k.R,),
-    ),
-    # Two input rules
-    # ---------------
-    ( # R = L / rLR
-        o = (:R,),
-        i = (:rLR, :L),
-        f = k -> (R = k.L / k.rLR,),
-    ),
-    ( # L = rLR * R
-        o = (:L,),
-        i = (:rLR, :R),
-        f = k -> (L = k.rLR * k.R,),
-    ),
-    ( # S = D / rDS
-        o = (:S,),
-        i = (:rDS, :D),
-        f = k -> (S = k.D / k.rDS,),
-    ),
-    ( # D = rDS * S
-        o = (:D,),
-        i = (:rDS, :S),
-        f = k -> (D = k.rDS * k.S,),
-    ),
+    # 2R / S = 1
+    (o = (:R,), i = (:S,), f = k -> (R = k.S / 2,),),
+    (o = (:S,), i = (:R,), f = k -> (S = 2 * k.R,),),
+    # rLR * rRL = 1
+    (o = (:rLR,), i = (:rRL,), f = k -> (rLR = inv(k.rRL),),),
+    (o = (:rRL,), i = (:rLR,), f = k -> (rRL = inv(k.rLR),),),
+    # rDS * rSD = 1
+    (o = (:rDS,), i = (:rSD,), f = k -> (rDS = inv(k.rSD),),),
+    (o = (:rSD,), i = (:rDS,), f = k -> (rSD = inv(k.rDS),),),
+    # A = π * D^2 / 4
+    (o = (:D,), i = (:A,), f = k -> (D = √(4 * k.A / π),),),
+    (o = (:A,), i = (:D,), f = k -> (A = π * k.D^2 / 4,),),
+    # rLR * R / L = 1
+    (o = (:R,), i = (:rLR, :L), f = k -> (R = k.L / k.rLR,),),
+    (o = (:L,), i = (:rLR, :R), f = k -> (L = k.rLR * k.R,),),
+    # rDS * S / D = 1
+    (o = (:S,), i = (:rDS, :D), f = k -> (S = k.D / k.rDS,),),
+    (o = (:D,), i = (:rDS, :S), f = k -> (D = k.rDS * k.S,),),
+    # r = Vmax / Vmin
+    (o = (:r,), i = (:Vmax, :Vmin), f = k -> (r = k.Vmax / k.Vmin,)),
+    (o = (:Vmax,), i = (:r, :Vmin), f = k -> (Vmax = k.Vmin * k.r,)),
+    (o = (:Vmin,), i = (:Vmax, :r), f = k -> (Vmin = k.Vmax / k.r,)),
+    # Vdu = Vmax - Vmin
+    (o = (:Vdu,), i = (:Vmax, :Vmin), f = k -> (Vdu = k.Vmax - k.Vmin,)),
+    (o = (:Vmax,), i = (:Vdu, :Vmin), f = k -> (Vmax = k.Vmin + k.Vdu,)),
+    (o = (:Vmin,), i = (:Vmax, :Vdu), f = k -> (Vmin = k.Vmax - k.Vdu,)),
+    # Vmin = Vdu / (r - 1)
+    (o = (:Vmin,), i = (:Vdu, :r), f = k -> (Vmin = k.Vdu / (k.r - 1),)),
+    # Vdu = A * S
+    (o = (:Vdu,), i = (:A, :S), f = k -> (Vdu = k.A * k.S,)),
+    (o = (:A,), i = (:Vdu, :S), f = k -> (A = k.Vdu / k.S,)),
+    (o = (:S,), i = (:A, :Vdu), f = k -> (S = k.Vdu / k.A,)),
+    # Vdu = π * S^3 * rDS^2 / 4
+    (o = (:Vdu,), i = (:S, :rDS), f = k -> (Vdu = π * k.S^3 * k.rDS^2 / 4,)),
+    (o = (:S,), i = (:Vdu, :rDS), f = k -> (S = cbrt((4 * k.Vdu) / (k.rDS^2 * π)),)),
+    # Vmin = x0 * A
+    (o = (:Vmin,), i = (:A, :x0), f = k -> (Vmin = k.x0 * k.A,)),
+    (o = (:A,), i = (:Vmin, :x0), f = k -> (A = k.Vmin / k.x0,)),
+    (o = (:x0,), i = (:A, :Vmin), f = k -> (x0 = k.Vmin / k.A,)),
+    # Vd = Vdu * z
+    (o = (:Vd,), i = (:Vdu, :z), f = k -> (Vd = k.Vdu * k.z,)),
+    (o = (:Vdu,), i = (:Vd, :z), f = k -> (Vdu = k.Vd / k.z,)),
+    (o = (:z,), i = (:Vdu, :Vd), f = k -> (z = k.Vd / k.Vdu,)),
 ]
 
 # Conversions

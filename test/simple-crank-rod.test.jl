@@ -42,12 +42,18 @@ end
     for ℙ in union2vec(Base.IEEEFloat)
         RLDr = (1, 2//1, BigFloat("1"), ℯ)
         @test SimpleCR{ℙ}(RLDr...) isa SimpleCR{ℙ}
+        RLDr = (1u"cm", 2//1 * u"cm", BigFloat("1")u"cm", 200 * ℯ * u"percent")
+        @test SimpleCR{ℙ}(RLDr...) isa SimpleCR{ℙ}
     end
     # Promotion type conversion outer constructor
     RLDr = (1, 2//1, BigFloat("1"), 2//1)
     @test SimpleCR(RLDr...) isa SimpleCR{Float64}
+    RLDr = (1u"cm", 2//1 * u"cm", BigFloat("1")u"cm", 200//1 * u"percent")
+    @test SimpleCR(RLDr...) isa SimpleCR{Float64}
     for ℙ in union2vec(Base.IEEEFloat)
         RLDr = (1, 2//1, 0x01, ℙ(ℯ))
+        @test SimpleCR(RLDr...) isa SimpleCR{ℙ}
+        RLDr = (1u"cm", 2//1 * u"cm", 0x01 * u"cm", ℙ(200 * ℯ * u"percent"))
         @test SimpleCR(RLDr...) isa SimpleCR{ℙ}
     end
 end

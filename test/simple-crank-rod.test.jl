@@ -57,3 +57,13 @@ end
         @test SimpleCR(RLDr...) isa SimpleCR{ℙ}
     end
 end
+
+@testset "simple-crank-rod.test.jl: kwargs external constructor                   " begin
+    # (R, L, D, r) inputs
+    KW = (R=1, L=2, D=1, r=2)
+    @test SimpleCR(; KW...) isa SimpleCR
+    for kw in [Base.structdiff(KW, NamedTuple{(k,)}) for k in keys(KW)]
+        @test_throws AssertionError SimpleCR(; kw...)
+    end
+end
+

@@ -115,7 +115,8 @@ RULES = [
 function SimpleCR(; kwargs...)
     known = (; kwargs...)
     changed = true
-    while changed
+    hasRLDr = all(haskey(known, key) for key in (:R, :L, :D, :r))
+    while changed && !hasRLDr
         changed = false
         for RULE in RULES
             if all(haskey(known, key) for key in RULE.i)
@@ -128,10 +129,12 @@ function SimpleCR(; kwargs...)
                 end
             end
         end
+        hasRLDr = all(haskey(known, key) for key in (:R, :L, :D, :r))
     end
     @assert(
-        all(haskey(known, key) for key in (:R, :L, :D, :r)),
-        "Error: Insufficient inputs to compute (R, L, D, r)"
+        hasRLDr,
+        "Error: Insufficient inputs to compute (R, L, D, r)" * "\n" *
+        "Info.: Known inputs: $(join(keys(known), ", ", ", and "))."
     )
     return SimpleCR(known.R, known.L, known.D, known.r)
 end

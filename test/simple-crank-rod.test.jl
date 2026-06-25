@@ -1,13 +1,6 @@
 using InteractiveUtils
 
-# Collects and returns Union members into a DataType[]
-# ```julia
-# julia> union2vec(Base.IEEEFloat)
-# 3-element Vector{DataType}:
-#  Float16
-#  Float32
-#  Float64
-# ```
+# Collects and returns Union members into a DataType[], allowing loop through Union types
 function union2vec(theU::Union)
     ret = DataType[]
     while theU isa Union
@@ -45,15 +38,17 @@ end
 end
 
 @testset "simple-crank-rod.test.jl: outer constructor return types                " begin
+    # Set type conversion outer constructor
     for ℙ in union2vec(Base.IEEEFloat)
-        for ℝ in [Int64, Rational{Int64}, BigFloat]
-            RLDr = ℝ.((1, 2, 1, 2))
-            # Set type conversion outer constructors
-            @test SimpleCR{ℙ}(RLDr...) isa SimpleCR{ℙ}
-        end
-        RLDr = (ℯ, π, ℯ, π)
-        # Set type conversion outer constructors
+        RLDr = (1, 2//1, BigFloat("1"), ℯ)
         @test SimpleCR{ℙ}(RLDr...) isa SimpleCR{ℙ}
+    end
+    # Promotion type conversion outer constructor
+    RLDr = (1, 2//1, BigFloat("1"), 2//1)
+    @test SimpleCR(RLDr...) isa SimpleCR{Float64}
+    for ℙ in union2vec(Base.IEEEFloat)
+        RLDr = (1, 2//1, 0x01, ℙ(ℯ))
+        @test SimpleCR(RLDr...) isa SimpleCR{ℙ}
     end
 end
 

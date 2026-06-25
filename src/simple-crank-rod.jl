@@ -58,7 +58,7 @@ function SimpleCR(
         R::Unitful.Length{ℝ},
         L::Unitful.Length{𝕃},
         D::Unitful.Length{𝔻},
-        r::Union{Real, Quantity{𝕣}},
+        r::Union{𝕣, Quantity{𝕣}},
     ) where {ℝ <: Real, 𝕃 <: Real, 𝔻 <: Real, 𝕣 <: Real}
     ℙ = promote_type(ℝ, 𝕃, 𝔻, 𝕣)
     ℙ = ℙ <: FLOAT ? ℙ : Float64

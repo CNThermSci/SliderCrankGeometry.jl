@@ -115,6 +115,30 @@ RULES = [
     (o = (:z,), i = (:Vdu, :Vd), f = k -> (z = k.Vd / k.Vdu,)),
 ]
 
+function SimpleCR(; kwargs...)
+    known = (; kwargs...)
+    changed = true
+    while changed
+        changed = false
+        for RULE in RULES
+            if all(haskey(known, key) for key in RULE.i)
+                result = RULE.f(known)
+                for (key, value) in pairs(result)
+                    if !haskey(known, key)
+                        known = (; known..., key => value)
+                        changed = true
+                    end
+                end
+            end
+        end
+    end
+    @assert(
+        all(haskey(known, key) for key in (:R, :L, :D, :r)),
+        "Error: Insufficient inputs to compute (R, L, D, r)"
+    )
+    return SimpleCR(known.R, known.L, known.D, known.r)
+end
+
 # Conversions
 # -----------
 
@@ -199,24 +223,6 @@ rDS(ξ::SimpleCR) = ξ.D / Stroke(ξ)
             rLR = rLR(ξ),
             rDS = rDS(ξ),
         )
-end
-
-# Convenience functions for construction
-# --------------------------------------
-
-# (R, L, D) from ratios and cylinder displacement
-function RLD(; rDS::Real = 1, rLR::Real = 4, Vdu::Real)
-    @assert(rLR > 1, "Error: rLR <= 1")
-    @assert(Vdu > 0, "Error: Vdu <= 0")
-    S = cbrt(4 * Vdu / (π * rDS^2))
-    D = S * rDS
-    R = S / 2
-    L = R * rLR
-    return (R, L, D)
-end
-
-function SimpleCR(; rDS::Real = 1, rLR::Real = 4, Vdu::Real, r::Real)
-    return SimpleCR(RLD(rDS = rDS, rLR = rLR, Vdu = Vdu)..., r)
 end
 
 # User-facing functions

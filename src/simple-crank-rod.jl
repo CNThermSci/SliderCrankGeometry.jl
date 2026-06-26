@@ -196,7 +196,7 @@ rDS(ξ::SimpleCR) = ξ.D / Stroke(ξ)
 
 # Type Functor
 (ξ::SimpleCR{ℙ})(units = false) where {ℙ} = begin
-    Bool(units) ? (
+    ret = Bool(units) ? (
             R = uconvert(u"mm", Radius(ξ) * u"m"),
             L = uconvert(u"mm", Length(ξ) * u"m"),
             D = uconvert(u"mm", Diameter(ξ) * u"m"),
@@ -223,6 +223,7 @@ rDS(ξ::SimpleCR) = ξ.D / Stroke(ξ)
             rLR = rLR(ξ),
             rDS = rDS(ξ),
         )
+    return pairs(ret)
 end
 
 # User-facing functions

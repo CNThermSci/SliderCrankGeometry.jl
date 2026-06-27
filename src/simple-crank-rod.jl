@@ -40,24 +40,24 @@ end
 
 # Set type with unit conversion and stripping / 2 indirections
 function SimpleCR{ℙ}(
-        R::Unitful.Length{<:Real},
-        L::Unitful.Length{<:Real},
-        D::Unitful.Length{<:Real},
+        R::Union{Real, Unitful.Length{<:Real}},
+        L::Union{Real, Unitful.Length{<:Real}},
+        D::Union{Real, Unitful.Length{<:Real}},
         r::Union{Real, Quantity{<:Real}},
     ) where {ℙ <: FLOAT}
     return SimpleCR{ℙ}(
-        uconvert(u"m", R).val,
-        uconvert(u"m", L).val,
-        uconvert(u"m", D).val,
+        R isa Quantity ? uconvert(u"m", R).val : R,
+        L isa Quantity ? uconvert(u"m", L).val : L,
+        D isa Quantity ? uconvert(u"m", D).val : D,
         uconvert(NoUnits, r),
     )
 end
 
 # Promotion type with unit conversion and stripping / 3 indirections
 function SimpleCR(
-        R::Unitful.Length{ℝ},
-        L::Unitful.Length{𝕃},
-        D::Unitful.Length{𝔻},
+        R::Union{ℝ, Unitful.Length{ℝ}},
+        L::Union{𝕃, Unitful.Length{𝕃}},
+        D::Union{𝔻, Unitful.Length{𝔻}},
         r::Union{𝕣, Quantity{𝕣}},
     ) where {ℝ <: Real, 𝕃 <: Real, 𝔻 <: Real, 𝕣 <: Real}
     ℙ = promote_type(ℝ, 𝕃, 𝔻, 𝕣)

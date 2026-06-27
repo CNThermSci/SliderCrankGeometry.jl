@@ -71,4 +71,3 @@ end
     suffKwargsTest(rSD=2, L=2, S=2, r=2)
     suffKwargsTest(R=1, L=2, D=1, x0=4e-2)
 end
-

@@ -83,4 +83,11 @@ end
     suffKwargsTest(  S=2, L=2, Vdu=(π/2), Vmax=(10/9)*(π/2))
     suffKwargsTest(  S=2, L=2, Vdu=(π/2),  Vmin=(1/9)*(π/2))
     suffKwargsTest(  S=2, L=2, Vdu=(π/2),            x0=2/9)
+    suffKwargsTest(rSD=2, L=2,       D=1,           x0=4e-2)
+    suffKwargsTest(rSD=2, L=2,       D=1, Vmax=(10/9)*(π/2))
+    suffKwargsTest(rSD=2, L=2,       D=1,  Vmin=(1/9)*(π/2))
+    suffKwargsTest(rSD=2, L=2, Vdu=(π/2),              r=10)
+    suffKwargsTest(rSD=2, L=2, Vdu=(π/2), Vmax=(10/9)*(π/2))
+    suffKwargsTest(rSD=2, L=2, Vdu=(π/2),  Vmin=(1/9)*(π/2))
+    suffKwargsTest(rSD=2, L=2, Vdu=(π/2),            x0=2/9)
 end

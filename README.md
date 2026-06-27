@@ -21,8 +21,8 @@ Currently supported models are:
 
 - All data fields are stored as plain `ℙ <: Base.IEEEFloat` types;
 - It is _assumed_ that values are in SI units, i.e., lengths in $m$, volumes in $m^3$, etc.;
-- Constructors may accept `Real` and `Quantity{<:Real}` arguments;
-- Types are `functor`s that output commonly used derived quantities;
+- Constructors accept _any_ combination of `Real` and `Quantity{<:Real}` arguments;
+- Types are `functor`s that output commonly used derived quantities as `Base.Pairs`;
 - Functor argument control whether implicit units are applied to the output.
 
 Therefore typical usage consists in (1) instantiating, and (2) calling the models as functors.
@@ -42,21 +42,46 @@ julia> CR = SimpleCR(0.08, 0.24, 0.16, 12)
 SimpleCR{Float64}(0.08, 0.24, 0.16, 12.0)
 
 julia> CR()
-(R = 0.08, L = 0.24, D = 0.16, r = 12.0, S = 0.16, A = 0.020106192982974676, x0 = 0.014545454545454547, Vdu = 0.0032169908772759484, Vmin = 0.0002924537161159953, Vmax = 0.0035094445933919437, rLR = 3.0, rDS = 1.0)
+pairs(::NamedTuple) with 12 entries:
+  :R    => 0.08
+  :L    => 0.24
+  :D    => 0.16
+  :r    => 12.0
+  :S    => 0.16
+  :A    => 0.0201062
+  :x0   => 0.0145455
+  :Vdu  => 0.00321699
+  :Vmin => 0.000292454
+  :Vmax => 0.00350944
+  :rLR  => 3.0
+  :rDS  => 1.0
 ```
 
-When the `CR` object is called as a `function`, i.e., used as a `functor`, it outputs a named
-tuple with the following fields: all the stored fields plus the stroke `S`, the cylinder
-cross-section area `A`, the TDC piston-to-head gap `x0`, the piston displaced volume `Vdu`,
-the combustion chamber minimum and maximum volumes `Vmin` and `Vmax`, the rod length to crank
-radius ratio `rLR`, and the diameter to stroke ratio `rDS`.
+The `SimpleCR` functor returns a `Base.Pairs`, which can be conveniently converted into `NamedTuple` with:
+
+```julia
+julia> (; CR()...)
+(R = 0.08, L = 0.24, D = 0.16, r = 12.0, S = 0.16, A = 0.020106192982974676, x0 = 0.014545454545454547, Vdu = 0.0032169908772759484, Vmin = 0.0002924537161159953, Vmax = 0.0035094445933919437, rLR = 3.0, rDS = 1.0)
+```
 
 Units are output whenever the functor `units` positional argument evaluates to `true` through
 `Bool(units)`, meaning `CR(true)` and the shorter call `CR(1)` have the same effect:
 
 ```julia
 julia> CR(1)
-(R = 80.0 mm, L = 240.0 mm, D = 160.0 mm, r = 12.0, S = 160.0 mm, A = 201.06192982974676 cm^2, x0 = 14.545454545454547 mm, Vdu = 3.2169908772759483 L, Vmin = 0.2924537161159953 L, Vmax = 3.509444593391944 L, rLR = 3.0, rDS = 1.0)
+pairs(::NamedTuple) with 12 entries:
+  :R    => 80.0 mm
+  :L    => 240.0 mm
+  :D    => 160.0 mm
+  :r    => 12.0
+  :S    => 160.0 mm
+  :A    => 201.062 cm^2
+  :x0   => 14.5455 mm
+  :Vdu  => 3.21699 L
+  :Vmin => 0.292454 L
+  :Vmax => 3.50944 L
+  :rLR  => 3.0
+  :rDS  => 1.0
 ```
 
 It is worth noting that although values are internally stored under the conventions above of
@@ -73,15 +98,19 @@ julia> cr == CR
 true
 ```
 
-### Example 2 – `SimpleCR` engine kinematics from ratios and cylinder displacement
+### Example 2 – `SimpleCR` engine kinematics from keyword arguments
 
-Suppose we want to describe the kinematics of a 4-cylinder, square ($r_{DS} = 1$), $2.0 L$
-engine with a $11:1$ compression ratio, and rod length to crank radius ratio $r_{LR} = 3.5$.
-There is a convenience constructor for this scenario:
+- `SimpleCR` can be instantiated from sufficient keyword arguments (`kwargs`);
+- This is successful if `(:R, :L, :D, :r)` can be determined from the `kwargs`;
+- `kwargs ∈ (:R, :L, :D, :r, :S, :A, :x0, :Vdu, :Vmin, :Vmax, :rLR, :rDS, :Vd, :z)`;
+
+Suppose one wants to describe the kinematics of a 4-cylinder, square ($r_{DS} = 1$), $2.0 L$
+engine with a $11:1$ compression ratio, and rod length to crank radius ratio $r_{LR} = 3.5$,
+then:
 
 ```julia
-julia> CR = SimpleCR(rDS = 1, rLR = 3.5, Vdu = 2.0e-3/4, r = 11)
-SimpleCR{Float64}(0.04301270069140498, 0.15054445241991743, 0.08602540138280997, 11.0)
+julia> CR = SimpleCR(z = 4, rDS = 1, Vd = 2u"L", rLR = 3.5, r = 11)
+SimpleCR{Float64}(0.04301270069140499, 0.15054445241991746, 0.08602540138280998, 11.0)
 ```
 
 Suppose further that we'd want to use IEEE-754 single precision floats. We could `convert` the
@@ -102,8 +131,8 @@ SimpleCR{Float32}(0.0430127f0, 0.15054445f0, 0.0860254f0, 11.0f0)
 The functor output is consistent with the internal floating point precision:
 
 ```julia
-julia> Float32(CR)(1)
-(R = 43.0127f0 mm, L = 150.54445f0 mm, D = 86.0254f0 mm, r = 11.0f0, S = 86.0254f0 mm, A = 58.12237f0 cm^2, x0 = 8.60254f0 mm, Vdu = 0.5f0 L, Vmin = 0.05f0 L, Vmax = 0.55f0 L, rLR = 3.5f0, rDS = 1.0f0)
+julia> Float32(CR)(true)[:S]
+86.0254f0 mm
 ```
 
 ## Author
@@ -138,7 +167,7 @@ How to cite this project:
   journal      = {GitHub repository},
   publisher    = {GitHub},
   url          = {https://github.com/EduThermSci/EngineKinematics.jl},
-  note         = {release 0.1.0 of 2026-06-23},
+  note         = {release 0.2.0 of 2026-06-26},
 }
 ```
 

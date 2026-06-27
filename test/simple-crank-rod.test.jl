@@ -29,12 +29,6 @@ end
         RLDr = ℙ.((1, 2, 1, 1))
         @test_throws "Error: r <= 1" SimpleCR(RLDr...)
     end
-    #invR = Real[]
-    #push!(invR, [prevfloat(one(ℙ)) for ℙ in union2vec(Base.IEEEFloat)])
-    #push!(invR, [99//100, 0, 0x00, BigFloat("0.99")])
-    #for ℙ in union2vec(Base.IEEEFloat)
-    #    for invR in 
-    #end
 end
 
 @testset "simple-crank-rod.test.jl: outer constructor return types                " begin

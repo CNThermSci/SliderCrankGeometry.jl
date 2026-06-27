@@ -21,8 +21,8 @@ Currently supported models are:
 
 - All data fields are stored as plain `ℙ <: Base.IEEEFloat` types;
 - It is _assumed_ that values are in SI units, i.e., lengths in $m$, volumes in $m^3$, etc.;
-- Constructors may accept `Real` and `Quantity{<:Real}` arguments;
-- Types are `functor`s that output commonly used derived quantities;
+- Constructors accept _any_ combination of `Real` and `Quantity{<:Real}` arguments;
+- Types are `functor`s that output commonly used derived quantities as `Base.Pairs`;
 - Functor argument control whether implicit units are applied to the output.
 
 Therefore typical usage consists in (1) instantiating, and (2) calling the models as functors.
@@ -42,14 +42,6 @@ julia> CR = SimpleCR(0.08, 0.24, 0.16, 12)
 SimpleCR{Float64}(0.08, 0.24, 0.16, 12.0)
 
 julia> CR()
-(R = 0.08, L = 0.24, D = 0.16, r = 12.0, S = 0.16, A = 0.020106192982974676, x0 = 0.014545454545454547, Vdu = 0.0032169908772759484, Vmin = 0.0002924537161159953, Vmax = 0.0035094445933919437, rLR = 3.0, rDS = 1.0)
-```
-
-The `SimpleCR` functor returns a `NamedTuple`, which can be more conveniently viewed in julia's
-`REPL` with the `pairs()` function:
-
-```julia
-julia> pairs(CR())
 pairs(::NamedTuple) with 12 entries:
   :R    => 0.08
   :L    => 0.24
@@ -65,20 +57,18 @@ pairs(::NamedTuple) with 12 entries:
   :rDS  => 1.0
 ```
 
-When the `CR` object is called as a `function`, i.e., used as a `functor`, it outputs a named
-tuple with the following fields: all the stored fields plus the stroke `S`, the cylinder
-cross-section area `A`, the TDC piston-to-head gap `x0`, the piston displaced volume `Vdu`,
-the combustion chamber minimum and maximum volumes `Vmin` and `Vmax`, the rod length to crank
-radius ratio `rLR`, and the diameter to stroke ratio `rDS`.
+The `SimpleCR` functor returns a `Base.Pairs`, which can be conveniently converted into `NamedTuple` with:
+
+```julia
+julia> (; CR()...)
+(R = 0.08, L = 0.24, D = 0.16, r = 12.0, S = 0.16, A = 0.020106192982974676, x0 = 0.014545454545454547, Vdu = 0.0032169908772759484, Vmin = 0.0002924537161159953, Vmax = 0.0035094445933919437, rLR = 3.0, rDS = 1.0)
+```
 
 Units are output whenever the functor `units` positional argument evaluates to `true` through
 `Bool(units)`, meaning `CR(true)` and the shorter call `CR(1)` have the same effect:
 
 ```julia
 julia> CR(1)
-(R = 80.0 mm, L = 240.0 mm, D = 160.0 mm, r = 12.0, S = 160.0 mm, A = 201.06192982974676 cm^2, x0 = 14.545454545454547 mm, Vdu = 3.2169908772759483 L, Vmin = 0.2924537161159953 L, Vmax = 3.509444593391944 L, rLR = 3.0, rDS = 1.0)
-
-julia> pairs(CR(1))
 pairs(::NamedTuple) with 12 entries:
   :R    => 80.0 mm
   :L    => 240.0 mm

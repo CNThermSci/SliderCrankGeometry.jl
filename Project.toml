@@ -1,6 +1,6 @@
 name = "EngineKinematics"
 uuid = "0b44c29b-429e-4def-8932-c80589416a57"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["C. Naaktgeboren"]
 
 [deps]

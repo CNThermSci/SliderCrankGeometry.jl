@@ -11,14 +11,14 @@ function union2vec(theU::Union)
     return ret
 end
 
-@testset "simple-crank-rod.test.jl: inner constructor return types                " begin
+@testset "MonoCylinder.test.jl: inner constructor return types                      " begin
     for ℙ in union2vec(Base.IEEEFloat)
         RLDr = ℙ.((1, 2, 1, 2))
         @test MonoCylinder(RLDr...) isa MonoCylinder{ℙ}
     end
 end
 
-@testset "simple-crank-rod.test.jl: inner constructor validations                 " begin
+@testset "MonoCylinder.test.jl: inner constructor validations                       " begin
     for ℙ in union2vec(Base.IEEEFloat)
         RLDr = ℙ.((0, 2, 1, 2))
         @test_throws "Error: R <= 0" MonoCylinder(RLDr...)
@@ -31,7 +31,7 @@ end
     end
 end
 
-@testset "simple-crank-rod.test.jl: outer constructor return types                " begin
+@testset "MonoCylinder.test.jl: outer constructor return types                      " begin
     # Set type conversion outer constructor
     for ℙ in union2vec(Base.IEEEFloat)
         RLDr = (1, 2//1, BigFloat("1"), ℯ)
@@ -62,7 +62,7 @@ function suffKwargsTest(; kwargs...)
     end
 end
 
-@testset "simple-crank-rod.test.jl: kwargs external constructor                   " begin
+@testset "MonoCylinder.test.jl: kwargs external constructor                         " begin
     suffKwargsTest(  R=1, L=2,            D=1,               r=2)
     suffKwargsTest(rLR=2, L=2,            D=1,               r=2)
     suffKwargsTest(rLR=2, R=1,            D=1,               r=2)

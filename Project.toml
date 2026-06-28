@@ -1,6 +1,6 @@
-name = "EngineKinematics"
-uuid = "0b44c29b-429e-4def-8932-c80589416a57"
-version = "0.2.0"
+name = "SliderCrankGeometry"
+uuid = "e1e7c491-b663-4f99-9eec-1cfab755363a"
+version = "0.3.0"
 authors = ["C. Naaktgeboren"]
 
 [deps]

@@ -1,21 +1,19 @@
-# EngineKinematics.jl
+# SliderCrankGeometry.jl
 
-Reciprocating engine kinematics
+Slider-crank geometry descriptors for internal combustion engines.
 
 ## Description
 
-`EngineKinematics.jl` is a package developed in the context of undergraduate mechanical
+`SliderCrankGeometry.jl` is a package developed in the context of undergraduate mechanical
 engineering course on internal combustion engine simulation at the equilibrium thermodynamics
 level, also known as 0-D models. It provides types for organizing and storing reciprocating
 internal combustion engine core piston-in-cylinder mechanism parameters and related utility
 calculations.
 
-`EngineKinematics.jl` is primarily educational and isn't meant for research or production
-scenarios.
-
 Currently supported models are:
 
-- `SimpleCR`: a `ℙ <: Base.IEEEFloat`-parametric model for simple crank-rod-piston mechanism.
+- `MonoCylinder{ℙ <: Base.IEEEFloat}`: a simple crank-rod-piston mechanism for mono-cylinder
+  reciprocating engines.
 
 ## Common Design Choices
 
@@ -29,19 +27,19 @@ Therefore typical usage consists in (1) instantiating, and (2) calling the model
 
 ## Examples
 
-### Example 1 – `SimpleCR` engine kinematics from primitive dimensions
+### Example 1 – `MonoCylinder` engine kinematics from primitive dimensions
 
-`SimpleCR` only stores (i) the crank radius $R$, (ii) the connecting-rod length $L$, (iii) the
+`MonoCylinder` only stores (i) the crank radius $R$, (ii) the connecting-rod length $L$, (iii) the
 piston diameter $D$, and (iv) the engine compression ratio $r$, so the simplest use is to
 provide these quantities to a constructor:
 
 ```julia
-julia> using EngineKinematics
+julia> using SliderCrankGeometry
 
-julia> CR = SimpleCR(0.08, 0.24, 0.16, 12)
-SimpleCR{Float64}(0.08, 0.24, 0.16, 12.0)
+julia> MC = MonoCylinder(0.08, 0.24, 0.16, 12)
+MonoCylinder{Float64}(0.08, 0.24, 0.16, 12.0)
 
-julia> CR()
+julia> MC()
 pairs(::NamedTuple) with 12 entries:
   :R    => 0.08
   :L    => 0.24
@@ -57,18 +55,18 @@ pairs(::NamedTuple) with 12 entries:
   :rDS  => 1.0
 ```
 
-The `SimpleCR` functor returns a `Base.Pairs`, which can be conveniently converted into `NamedTuple` with:
+The `MonoCylinder` functor returns a `Base.Pairs`, which can be conveniently converted into `NamedTuple` with:
 
 ```julia
-julia> (; CR()...)
+julia> (; MC()...)
 (R = 0.08, L = 0.24, D = 0.16, r = 12.0, S = 0.16, A = 0.020106192982974676, x0 = 0.014545454545454547, Vdu = 0.0032169908772759484, Vmin = 0.0002924537161159953, Vmax = 0.0035094445933919437, rLR = 3.0, rDS = 1.0)
 ```
 
 Units are output whenever the functor `units` positional argument evaluates to `true` through
-`Bool(units)`, meaning `CR(true)` and the shorter call `CR(1)` have the same effect:
+`Bool(units)`, meaning `MC(true)` and the shorter call `MC(1)` have the same effect:
 
 ```julia
-julia> CR(1)
+julia> MC(1)
 pairs(::NamedTuple) with 12 entries:
   :R    => 80.0 mm
   :L    => 240.0 mm
@@ -91,16 +89,16 @@ $mm$ for parts linear dimensions, as well as $L$ (liters) for engine volumes, et
 Arbitrary units of consistent dimensions can be specified upon construction:
 
 ```julia
-julia> cr = SimpleCR(80u"mm", 240u"mm", 160u"mm", 12.0)
-SimpleCR{Float64}(0.08, 0.24, 0.16, 12.0)
+julia> mc = MonoCylinder(80u"mm", 240u"mm", 160u"mm", 12.0)
+MonoCylinder{Float64}(0.08, 0.24, 0.16, 12.0)
 
-julia> cr == CR
+julia> mc == MC
 true
 ```
 
-### Example 2 – `SimpleCR` engine kinematics from keyword arguments
+### Example 2 – `MonoCylinder` engine kinematics from keyword arguments
 
-- `SimpleCR` can be instantiated from sufficient keyword arguments (`kwargs`);
+- `MonoCylinder` can be instantiated from sufficient keyword arguments (`kwargs`);
 - This is successful if `(:R, :L, :D, :r)` can be determined from the `kwargs`;
 - `kwargs ∈ (:R, :L, :D, :r, :S, :A, :x0, :Vdu, :Vmin, :Vmax, :rLR, :rDS, :Vd, :z)`;
 
@@ -109,29 +107,29 @@ engine with a $11:1$ compression ratio, and rod length to crank radius ratio $r_
 then:
 
 ```julia
-julia> CR = SimpleCR(z = 4, rDS = 1, Vd = 2u"L", rLR = 3.5, r = 11)
-SimpleCR{Float64}(0.04301270069140499, 0.15054445241991746, 0.08602540138280998, 11.0)
+julia> MC = MonoCylinder(z = 4, rDS = 1, Vd = 2u"L", rLR = 3.5, r = 11)
+MonoCylinder{Float64}(0.04301270069140499, 0.15054445241991746, 0.08602540138280998, 11.0)
 ```
 
 Suppose further that we'd want to use IEEE-754 single precision floats. We could `convert` the
-`SimpleCR{Float64}` type into a `SimpleCR{Float32}` one either explicitly, implicitly, or
+`MonoCylinder{Float64}` type into a `MonoCylinder{Float32}` one either explicitly, implicitly, or
 through a convenience conversion, as:
 
 ```julia
-julia> convert(SimpleCR{Float32}, CR)
-SimpleCR{Float32}(0.0430127f0, 0.15054445f0, 0.0860254f0, 11.0f0)
+julia> convert(MonoCylinder{Float32}, MC)
+MonoCylinder{Float32}(0.0430127f0, 0.15054445f0, 0.0860254f0, 11.0f0)
 
-julia> SimpleCR{Float32}[CR][1]
-SimpleCR{Float32}(0.0430127f0, 0.15054445f0, 0.0860254f0, 11.0f0)
+julia> MonoCylinder{Float32}[MC][1]
+MonoCylinder{Float32}(0.0430127f0, 0.15054445f0, 0.0860254f0, 11.0f0)
 
-julia> Float32(CR)
-SimpleCR{Float32}(0.0430127f0, 0.15054445f0, 0.0860254f0, 11.0f0)
+julia> Float32(MC)
+MonoCylinder{Float32}(0.0430127f0, 0.15054445f0, 0.0860254f0, 11.0f0)
 ```
 
 The functor output is consistent with the internal floating point precision:
 
 ```julia
-julia> Float32(CR)(true)[:S]
+julia> Float32(MC)(true)[:S]
 86.0254f0 mm
 ```
 
@@ -150,24 +148,10 @@ Federal University of Technology, Paraná
 
 ## License
 
-This project is [licensed](https://github.com/EduThermSci/EngineKinematics.jl/blob/main/LICENSE)
+This project is [licensed](https://github.com/CNThermSci/SliderCrankGeometry.jl/blob/main/LICENSE)
 under the MIT license.
 
 
 ## Citations
 
-How to cite this project:
-
-```bibtex
-@Misc{2026-NaaktgeborenC-EngineKinematics,
-  author       = {C. Naaktgeboren},
-  title        = {{EduThermSci/EngineKinematics.jl} -- Reciprocating engine kinematics},
-  howpublished = {Online},
-  year         = {2026},
-  journal      = {GitHub repository},
-  publisher    = {GitHub},
-  url          = {https://github.com/EduThermSci/EngineKinematics.jl},
-  note         = {release 0.2.0 of 2026-06-26},
-}
-```
-
+Please, refer to the `CITATION.bib` file on how to cite this project.

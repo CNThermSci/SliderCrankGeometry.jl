@@ -1,16 +1,16 @@
-# EngineKinematics.jl
+# SliderCrankGeometry.jl
 
-Reciprocating engine kinematics
+Slider-crank geometry descriptors for internal combustion engines.
 
 ## Description
 
-`EngineKinematics.jl` is a package developed in the context of undergraduate mechanical
+`SliderCrankGeometry.jl` is a package developed in the context of undergraduate mechanical
 engineering course on internal combustion engine simulation at the equilibrium thermodynamics
 level, also known as 0-D models. It provides types for organizing and storing reciprocating
 internal combustion engine core piston-in-cylinder mechanism parameters and related utility
 calculations.
 
-`EngineKinematics.jl` is primarily educational and isn't meant for research or production
+`SliderCrankGeometry.jl` is primarily educational and isn't meant for research or production
 scenarios.
 
 Currently supported models are:
@@ -36,7 +36,7 @@ piston diameter $D$, and (iv) the engine compression ratio $r$, so the simplest 
 provide these quantities to a constructor:
 
 ```julia
-julia> using EngineKinematics
+julia> using SliderCrankGeometry
 
 julia> CR = SimpleCR(0.08, 0.24, 0.16, 12)
 SimpleCR{Float64}(0.08, 0.24, 0.16, 12.0)
@@ -150,24 +150,10 @@ Federal University of Technology, Paraná
 
 ## License
 
-This project is [licensed](https://github.com/EduThermSci/EngineKinematics.jl/blob/main/LICENSE)
+This project is [licensed](https://github.com/CNThermSci/SliderCrankGeometry.jl/blob/main/LICENSE)
 under the MIT license.
 
 
 ## Citations
 
-How to cite this project:
-
-```bibtex
-@Misc{2026-NaaktgeborenC-EngineKinematics,
-  author       = {C. Naaktgeboren},
-  title        = {{EduThermSci/EngineKinematics.jl} -- Reciprocating engine kinematics},
-  howpublished = {Online},
-  year         = {2026},
-  journal      = {GitHub repository},
-  publisher    = {GitHub},
-  url          = {https://github.com/EduThermSci/EngineKinematics.jl},
-  note         = {release 0.2.0 of 2026-06-26},
-}
-```
-
+Please, refer to the `CITATION.bib` file on how to cite this project.

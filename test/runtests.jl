@@ -1,5 +1,5 @@
-using EngineKinematics
+using SliderCrankGeometry
 using Test
 
 # EngineKinematics tests by source
-include("simple-crank-rod.test.jl")
+include("MonoCylinder.test.jl")

@@ -4,7 +4,7 @@ module EngineKinematics
 using Reexport
 @reexport using Unitful
 
-# Includes - Simple Crank Rod
-include("simple-crank-rod.jl")
+# Includes - Monocylinder
+include("monocylinder.jl")
 
 end

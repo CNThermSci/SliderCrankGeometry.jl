@@ -4,7 +4,7 @@ module EngineKinematics
 using Reexport
 @reexport using Unitful
 
-# Includes - Monocylinder
-include("monocylinder.jl")
+# Includes - MonoCylinder
+include("MonoCylinder.jl")
 
 end

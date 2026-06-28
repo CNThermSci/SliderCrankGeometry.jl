@@ -134,7 +134,7 @@ function MonoCylinder(; kwargs...)
     @assert(
         hasRLDr,
         "Error: Insufficient inputs to compute (R, L, D, r)" * "\n" *
-        "Info.: Known inputs: $(join(keys(known), ", ", ", and "))."
+            "Info.: Known inputs: $(join(keys(known), ", ", ", and "))."
     )
     return MonoCylinder(known.R, known.L, known.D, known.r)
 end
@@ -248,53 +248,3 @@ Vd(ξ::MonoCylinder, z::Integer) = begin
     @assert(z >= 1, "Error: z < 1")
     Vdu(ξ) * z
 end
-
-# Crank-Rod mechanism geometry
-# ----------------------------
-
-# Projections
-_h(ξ::MonoCylinder{ℙ}, α::Real) where {ℙ} = ξ.R * sin(ℙ(α))
-_r(ξ::MonoCylinder{ℙ}, α::Real) where {ℙ} = ξ.R * cos(ℙ(α))
-_l(ξ::MonoCylinder, α::Real) = sqrt(ξ.L^2 - _h(ξ, α)^2)
-
-# Angles
-ϕ(ξ::MonoCylinder, α::Real) = atan(_h(ξ, α), _l(ξ, α))
-
-# Ratios
-βy(ξ::MonoCylinder, α::Real) = _r(ξ, α) / _l(ξ, α)
-βx(ξ::MonoCylinder, α::Real) = _h(ξ, α) / _l(ξ, α)
-
-# Angular speed
-ϕ′(ξ::MonoCylinder{ℙ}, α::Real, α′::Real) where {ℙ} = βy(ξ, α) * ℙ(α′)
-
-# Angular acceleration
-𝛀(ξ::MonoCylinder{ℙ}, α′::Real, α″::Real) where {ℙ} = [ℙ(α′)^2, ℙ(α″)]
-𝐚(ξ::MonoCylinder{ℙ}, α::Real) where {ℙ} = [βx(ξ, α) * (βy(ξ, α)^2 - one(ℙ)) βy(ξ, α)]
-ϕ″(ξ::MonoCylinder{ℙ}, α::Real, α′::Real, α″::Real) where {ℙ} = (𝐚(ξ, α) * 𝛀(ξ, α′, α″))[1]
-
-# Linear acceleration
-𝐲p(ξ::MonoCylinder{ℙ}, α::Real) where {ℙ} = begin
-    ypω = - _r(ξ, α) * (one(ℙ) + βy(ξ, α)) - _h(ξ, α) * 𝐚(ξ, α)[1]
-    ypω′ = - _h(ξ, α) * (one(ℙ) + βy(ξ, α))
-    return [ypω ypω′]
-end
-
-𝐱r(ξ::MonoCylinder{ℙ}, rg::Real, α::Real) where {ℙ} = begin
-    @assert(0 < rg < 1, "Error: rg ∉ (0, 1)")
-    xrω = _h(ξ, α) * (ℙ(rg) - one(ℙ))
-    xrω′ = _r(ξ, α) * (one(ℙ) - ℙ(rg))
-    return [xrω xrω′]
-end
-
-𝐲r(ξ::MonoCylinder{ℙ}, rg::Real, α::Real) where {ℙ} = begin
-    @assert(0 < rg < 1, "Error: rg ∉ (0, 1)")
-    yrω = - _r(ξ, α) * (one(ℙ) + ℙ(rg) * βy(ξ, α)) - _h(ξ, α) * ℙ(rg) * 𝐚(ξ, α)[1]
-    yrω′ = - _h(ξ, α) * (one(ℙ) + ℙ(rg) * βy(ξ, α))
-    return [yrω yrω′]
-end
-
-yp″(ξ::MonoCylinder, α::Real, α′::Real, α″::Real) = (𝐲p(ξ, α) * 𝛀(ξ, α′, α″))[1]
-
-xr″(ξ::MonoCylinder, rg::Real, α::Real, α′::Real, α″::Real) = (𝐱r(ξ, rg, α) * 𝛀(ξ, α′, α″))[1]
-
-yr″(ξ::MonoCylinder, rg::Real, α::Real, α′::Real, α″::Real) = (𝐲r(ξ, rg, α) * 𝛀(ξ, α′, α″))[1]

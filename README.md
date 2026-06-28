@@ -154,4 +154,5 @@ under the MIT license.
 
 ## Citations
 
-Please, refer to the `CITATION.bib` file on how to cite this project.
+Please, refer to the
+[citation](https://github.com/CNThermSci/SliderCrankGeometry.jl/blob/main/CITATION.bib) on how to cite this project.

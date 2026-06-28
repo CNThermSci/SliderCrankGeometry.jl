@@ -1,4 +1,4 @@
-module EngineKinematics
+module SliderCrankGeometry
 
 # Imports
 using Reexport

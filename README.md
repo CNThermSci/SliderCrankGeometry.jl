@@ -10,12 +10,10 @@ level, also known as 0-D models. It provides types for organizing and storing re
 internal combustion engine core piston-in-cylinder mechanism parameters and related utility
 calculations.
 
-`SliderCrankGeometry.jl` is primarily educational and isn't meant for research or production
-scenarios.
-
 Currently supported models are:
 
-- `MonoCylinder`: a `ℙ <: Base.IEEEFloat`-parametric model for simple crank-rod-piston mechanism.
+- `MonoCylinder{ℙ <: Base.IEEEFloat}`: a simple crank-rod-piston mechanism for mono-cylinder
+  reciprocating engines.
 
 ## Common Design Choices
 

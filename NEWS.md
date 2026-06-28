@@ -1,3 +1,7 @@
+## v0.3.0
+
+- Package renamed to `SliderCrankGeometry`.
+
 ## v0.2.0
 
 - Constructors accept _any_ combination of `Real` and `Quantity{<:Real}` arguments;
